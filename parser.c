@@ -78,10 +78,10 @@ ID_list_2:
   }
   while (lookahead == PROCEDURE || lookahead == FUNCTION) {
     switch (lookahead) {
-    PROCEDURE:
+    case PROCEDURE:
       match(PROCEDURE);match(ID);parmlist();
       break;
-    FUNCTION:
+    case FUNCTION:
       match(FUNCTION);match(ID);parmlist();match(':');type();
     }
     match(';');body();match(';');
@@ -150,7 +150,7 @@ void term(void)
   _times_fact:
   fact();
   switch(lookahead){
-    case'*':case'/':case DIV:case MOD:case AND;
+    case'*':case'/':case DIV:case MOD:case AND:
       match(lookahead);goto _times_fact;
   }
 }
