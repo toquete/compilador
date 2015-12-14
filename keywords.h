@@ -12,6 +12,7 @@ enum {
     WHILE,
     REPEAT,
     UNTIL,
+    CASE,
     IF,
     THEN,
     ELSE,
