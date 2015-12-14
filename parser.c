@@ -86,7 +86,7 @@ ID_list_2:
     }
     match(';');body();match(';');
   }
-  begin_end();
+  match(BEGIN);/*stmtlist();*/match(END);
 }
 /**
 * stmt -> begin_end | ifstmt | whilestmt | repstmt | forstmt | idstmt
@@ -95,7 +95,7 @@ void stmt(void)
 {
   switch(lookahead){
     case BEGIN:
-      match(BEGIN);stmtlist();match(END);break;
+      match(BEGIN);/*stmtlist();*/match(END);break;
     case IF:
       match(IF);expression();match(THEN);stmt();
       if(lookahead==ELSE){
@@ -159,7 +159,7 @@ void fact(void)
 {
   switch(lookahead){
     case ID:
-      variable();
+      //variable();
       if(lookahead==':'){
 	match(':');match('=');expression();
       }

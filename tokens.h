@@ -9,4 +9,8 @@ enum {
     ID,
     UINT,
     FLOAT,
+    STRCONST,
+    GEQ,
+    LEQ,
+    NEQ,
 };

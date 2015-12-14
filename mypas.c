@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <main.h>
+#include <mypas.h>
 
 FILE           *tape;
 
@@ -23,7 +23,7 @@ main(int argc, char *argv[])
 
     lookahead = gettoken(tape);
 
-    cmd();
+    //cmd();
 
     printf("\n");
 

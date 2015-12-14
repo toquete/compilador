@@ -23,7 +23,7 @@ int             gettoken(FILE * tape);
  * parser modules 
  */
 
-double          expr(void);
+void            expr(void);
 void            term(void);
 void            fact(void);
 void            match(int);
