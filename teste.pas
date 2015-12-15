@@ -1,7 +1,9 @@
 program teste;
 begin
-for i := 50 to 0 do
-begin
-	guizao_viado := 32e-23;
-end;
+if (guizao = 24) then
+	begin
+	end
+else
+	begin
+	end;
 end.

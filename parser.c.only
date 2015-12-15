@@ -11,6 +11,8 @@
 #include <lexer.h>
 #include <keywords.h>
 
+void stmtlist(void);
+
 /**
  * Top-down recursive parser emulating an EBNF for the simplified
  * Pascal (MyPas):
@@ -221,30 +223,6 @@ void mypas (void)
     match('.');
 }
 
-/**/ int label_counter = 1; /**/
-void ifstmt(void)
-{
-    /**/ int label_endif, label_else; /**/
-
-    match(IF);
-    expression();
-
-    /**/printf("\tgo false .L%i\n", label_endif = label_else = label_counter);/**/
-    /**/label_counter++;/**/
-
-    match(THEN);
-    stmt();
-
-    if (lookahead == ELSE) {
-        /**/printf("\tgoto .L%i\n", label_endif = label_counter);/**/
-        /**/label_counter++;/**/
-        /**/printf(" .L%i\n", label_else);/**/
-
-        match(ELSE);
-        stmt();
-    }
-}
-
 /**
 * stmtlist -> stmt ; {stmt ;}
 * stmt -> begin_end | ifstmt | whilestmt | repstmt | forstmt | idstmt
@@ -255,7 +233,6 @@ void ifstmt(void)
 * forstmt -> FOR expr := expr TO expr DO stmt
 * idstmt -> expr := expr
 */
-
 void stmt(void)
 {
     switch(lookahead){
@@ -265,7 +242,15 @@ void stmt(void)
         match(END);
         break;
     case IF:
-        ifstmt();
+        match(IF);
+        expression();
+        match(THEN);
+        stmt();
+
+        if(lookahead==ELSE){
+            match(ELSE);
+            stmt();
+        }
         break;
     case WHILE:
         match(WHILE);
