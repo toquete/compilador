@@ -3,7 +3,7 @@
  */
 
 enum {
-    NEG = 1025,
+    NEG = 2049,
     ADDOP,
     MULOP,
     ID,

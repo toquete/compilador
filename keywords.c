@@ -12,6 +12,7 @@ char *keyword[] = {
     "while",
     "repeat",
     "until",
+    "case",
     "if",
     "then",
     "else",

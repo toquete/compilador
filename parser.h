@@ -27,6 +27,7 @@ void            expr(void);
 void            term(void);
 void            fact(void);
 void            match(int);
+void            mypas(void);
 
 #define MAXSTACKSIZE 0x100
 extern double   E_val[MAXSTACKSIZE];

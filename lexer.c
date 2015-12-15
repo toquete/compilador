@@ -7,6 +7,7 @@
 
 #include <lexer.h>
 #include <tokens.h>
+#include <keywords.h>
 
 /*
  * automata cock-tail 
@@ -58,7 +59,14 @@ is_ID(FILE * tape)
         }
         ungetc(lexeme[lexcursor], tape);
         lexeme[lexcursor] = 0;
-        return keyword(lexeme) || ID;
+
+        int id;
+
+        if (id = is_keyword(lexeme)) {
+            return id;
+        }
+
+        return ID;
     }
     ungetc(lexeme[lexcursor], tape);
     return 0;

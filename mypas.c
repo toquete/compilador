@@ -6,10 +6,11 @@
 #include <stdlib.h>
 
 #include <mypas.h>
+#include <parser.h>
 
 FILE           *tape;
 
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
     if (argc > 1) {
         tape = fopen(argv[1], "r");
@@ -18,12 +19,15 @@ main(int argc, char *argv[])
             exit(-2);
         }
     } else {
-        tape = stdin;
+        tape = fopen("../teste.pas", "r");
+        if (tape == NULL) {
+            fprintf(stderr, "file not found... exiting\n");
+            exit(-2);
+        }
     }
 
     lookahead = gettoken(tape);
-
-    //cmd();
+    mypas();
 
     printf("\n");
 
