@@ -1,2 +1,6 @@
 !*.*
+*.o
+*.pro
+*.pro.user
+*.pri
 mypas
