@@ -1,9 +1,6 @@
 program teste;
 begin
-if (guizao = 24) then
-	begin
-	end
-else
+while guizao = 24 do
 	begin
 	end;
 end.

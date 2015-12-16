@@ -11,6 +11,8 @@
 #include <lexer.h>
 #include <keywords.h>
 
+/**/ int label_counter = 1; /**/
+
 /**
  * Top-down recursive parser emulating an EBNF for the simplified
  * Pascal (MyPas):
@@ -221,7 +223,6 @@ void mypas (void)
     match('.');
 }
 
-/**/ int label_counter = 1; /**/
 void ifstmt(void)
 {
     /**/ int label_endif, label_else; /**/
@@ -238,11 +239,39 @@ void ifstmt(void)
     if (lookahead == ELSE) {
         /**/printf("\tgoto .L%i\n", label_endif = label_counter);/**/
         /**/label_counter++;/**/
-        /**/printf(" .L%i\n", label_else);/**/
+        /**/printf(".L%i:\n", label_else);/**/
 
         match(ELSE);
         stmt();
     }
+}
+
+void beginend(void)
+{
+    match(BEGIN);
+    stmtlist();
+    match(END);
+}
+
+void whilestmt(void)
+{
+    /**/ int label_while, label_end_while; /**/
+
+    match(WHILE);
+
+    /**/printf(".L%i:\n", label_while = label_counter);/**/
+    /**/label_counter++;/**/
+
+    expression();
+
+    /**/printf("\tgo false .L%i\n", label_end_while = label_counter);/**/
+    /**/label_counter++;/**/
+
+    match(DO);
+
+    stmt();
+    /**/printf("\tgoto .L%i\n", label_while);/**/
+    /**/printf(".L%i\n", label_end_while);/**/
 }
 
 /**
@@ -260,18 +289,13 @@ void stmt(void)
 {
     switch(lookahead){
     case BEGIN:
-        match(BEGIN);
-        stmtlist();
-        match(END);
+        beginend();
         break;
     case IF:
         ifstmt();
         break;
     case WHILE:
-        match(WHILE);
-        expression();
-        match(DO);
-        stmt();
+        whilestmt();
         break;
     case REPEAT:
         match(REPEAT);

@@ -28,6 +28,7 @@ void            term(void);
 void            fact(void);
 void            match(int);
 void            mypas(void);
+void            stmt(void);
 void            stmtlist(void);
 
 #define MAXSTACKSIZE 0x100
