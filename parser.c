@@ -230,7 +230,7 @@ void ifstmt(void)
     match(IF);
     expression();
 
-    /**/printf("\tgo false .L%i\n", label_endif = label_else = label_counter);/**/
+    /**/printf("\tjz .L%i\n", label_endif = label_else = label_counter);/**/
     /**/label_counter++;/**/
 
     match(THEN);
@@ -264,7 +264,7 @@ void whilestmt(void)
 
     expression();
 
-    /**/printf("\tgo false .L%i\n", label_end_while = label_counter);/**/
+    /**/printf("\tjz .L%i\n", label_end_while = label_counter);/**/
     /**/label_counter++;/**/
 
     match(DO);
@@ -272,6 +272,23 @@ void whilestmt(void)
     stmt();
     /**/printf("\tgoto .L%i\n", label_while);/**/
     /**/printf(".L%i\n", label_end_while);/**/
+}
+
+void repeatstmt()
+{
+    /**/ int label_repeat; /**/
+    match(REPEAT);
+
+    /**/printf(".L%i:\n", label_repeat = label_counter);/**/
+    /**/label_counter++;/**/
+
+    stmtlist();
+
+    match(UNTIL);
+    expression();
+
+    /**/printf("\tjnz .L%i\n", label_repeat);/**/
+
 }
 
 /**
@@ -298,10 +315,7 @@ void stmt(void)
         whilestmt();
         break;
     case REPEAT:
-        match(REPEAT);
-        stmtlist();
-        match(UNTIL);
-        expression();
+        repeatstmt();
         break;
     case FOR:
         match(FOR);
