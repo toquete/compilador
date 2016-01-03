@@ -32,13 +32,13 @@ ID_list:
     }
 }
 
-void conslist(void)
+void caselist(void)
 {
-cons_list:
+case_list:
     match(STRCONST);
     if (lookahead == ','){
         match(',');
-        goto cons_list;
+        goto case_list;
     }
 }
 
@@ -47,9 +47,13 @@ void parmlist (void)
     if (lookahead == '(') {
         match('(');
 _parm_spec:
-        if(lookahead == VAR)
-            match(VAR);
-        idlist();
+        if (lookahead == PROCEDURE || lookahead == FUNCTION)
+            proc_func();
+        else {
+            if(lookahead == VAR)
+                match(VAR);
+            idlist();
+        }
         if(lookahead==';'){
             match(';');
             goto _parm_spec;
@@ -58,11 +62,35 @@ _parm_spec:
     }
 }
 
+void simple_type(void)
+{
+    switch(lookahead){
+    case INTEGER:case REAL:case DOUBLE:case BOOLEAN:case STRING:
+        match(lookahead);
+        break;
+    case '(':
+        match('(');
+        idlist();
+        match(')');
+        break;
+    case UINT: case FLOAT: case STRCONST: case ID:
+        match(lookahead);
+        match('.');
+        match('.');
+        switch(lookahead){
+        case UINT: case FLOAT: case STRCONST: case ID:
+            match(lookahead);
+            break;
+        }
+        break;
+    }
+}
+
 void range(void)
 {
     match('[');
 _UINT_list:
-    match(UINT);
+    simple_type();
     if(lookahead==','){
         match(',');
         goto _UINT_list;
@@ -72,15 +100,33 @@ _UINT_list:
 
 void type (void)
 {
-    switch(lookahead){
-    case INTEGER:case REAL:case DOUBLE:case BOOLEAN:case STRING:
-        match(lookahead);
-        break;
-    default:
-        match(ARRAY);
-        range();
-        match(OF);
-        type();
+    if (lookahead == '^'){
+        match('^');
+        switch(lookahead){
+        case INTEGER:case REAL:case DOUBLE:case BOOLEAN:case STRING:
+            match(lookahead);
+            break;
+        }
+    } else {
+        if (lookahead == PACKED)
+            match(PACKED);
+        switch (lookahead){
+        case SET:
+            match(SET);
+            match(OF);
+            simple_type();
+            break;
+        case ARRAY:
+            match(ARRAY);
+            range();
+            match(OF);
+            type();
+            break;
+        }
+        default:
+            match(RECORD);
+            field_list();
+            match(END);
     }
 }
 
@@ -180,7 +226,52 @@ void fact(void)
     }
 }
 
-void body (void)
+void label()
+{
+    if (lookahead == LABEL){
+        match(LABEL);
+UINT_list:
+        match(UINT);
+        if (lookahead == ','){
+            match(',');
+            goto UINT_list;
+        }
+        match(';');
+    }
+}
+
+void const_pas()
+{
+    if (lookahead == CONST){
+        match(CONST);
+const_list:
+        match(ID);
+        match('=');
+        switch(lookahead){
+        case UINT: case FLOAT: case STRCONST:
+            match(lookahead);
+        }
+        match(';');
+        if (lookahead == ID)
+            goto const_list;
+    }
+}
+
+void type_pas()
+{
+    if (lookahead == TYPE){
+        match(TYPE);
+type_list:
+        match(ID);
+        match('=');
+        type();
+        match(';');
+        if (lookahead == ID)
+            goto type_list;
+    }
+}
+
+void var()
 {
     while (lookahead == VAR) {
         match (VAR);
@@ -192,25 +283,40 @@ ID_list_2:
         if (lookahead == ID)
             goto ID_list_2;
     }
-    while (lookahead == PROCEDURE || lookahead == FUNCTION) {
-        switch (lookahead) {
-        case PROCEDURE:
-            match(PROCEDURE);
-            match(ID);
-            parmlist();
-            break;
-        case FUNCTION:
-            match(FUNCTION);
-            match(ID);
-            parmlist();
-            match(':');
-            type();
-            match(ID);
-        }
+}
+
+void proc_func()
+{
+    switch (lookahead) {
+    case PROCEDURE:
+        match(PROCEDURE);
+        match(ID);
+        parmlist();
+        break;
+    case FUNCTION:
+        match(FUNCTION);
+        match(ID);
+        parmlist();
+        match(':');
+        type();
+        match(ID);
+    }
+}
+
+void body (void)
+{
+    label();
+    const_pas();
+    type_pas();
+    var();
+
+    while (lookahead == PROCEDURE || lookahead == FUNCTION){
+        proc_func();
         match(';');
         body();
         match(';');
     }
+
     stmtlist();
 }
 
@@ -218,6 +324,9 @@ void mypas (void)
 {
     match(PROGRAM);
     match(ID);
+    match('(');
+    idlist();
+    match(')');
     match(';');
     body();
     match('.');
@@ -277,7 +386,7 @@ void stmt(void)
         expression();
         match(OF);
 case_list:
-        conslist();
+        caselist();
         match(':');
         stmt();
         if (lookahead == ';'){

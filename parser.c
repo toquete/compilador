@@ -300,7 +300,7 @@ void repeatstmt()
 * repstmt -> REPEAT stmtlist UNTIL expr
 * forstmt -> FOR expr := expr TO expr DO stmt
 * idstmt -> expr := expr
-*/
+**/
 
 void stmt(void)
 {

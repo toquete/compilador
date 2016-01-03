@@ -34,7 +34,13 @@ char *keyword[] = {
     "false",
     "array",
     "of",
-    "end"
+    "end",
+    "label",
+    "const",
+    "type",
+    "packed",
+    "set",
+    "record"
 };
 
 int

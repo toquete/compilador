@@ -30,6 +30,7 @@ void            match(int);
 void            mypas(void);
 void            stmt(void);
 void            stmtlist(void);
+void            proc_func(void);
 
 #define MAXSTACKSIZE 0x100
 extern double   E_val[MAXSTACKSIZE];

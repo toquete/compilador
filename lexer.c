@@ -62,7 +62,7 @@ is_ID(FILE * tape)
 
         int id;
 
-        if (id = is_keyword(lexeme)) {
+        if ((id = is_keyword(lexeme))) {
             return id;
         }
 
@@ -136,13 +136,13 @@ gettoken(FILE * tape)
 {
     int             token;
 
-    if (token = skipcomments(tape))
+    if ((token = skipcomments(tape)))
         return token;
 
-    if (token = is_ID(tape))
+    if ((token = is_ID(tape)))
         return token;
 
-    if (token = is_NUM(tape))
+    if ((token = is_NUM(tape)))
         return token;
 
     return token = getc(tape);
