@@ -1,7 +1,7 @@
 program teste;
 begin
-repeat
+for ab:=0 to 5 do
 	guizao := 24;
-until acabar_a_viadagem = 1;
+
 end.
 
