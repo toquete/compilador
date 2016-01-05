@@ -291,6 +291,28 @@ void repeatstmt()
 
 }
 
+void forstmt()
+{
+    /**/ int label_for, label_end_for; /**/
+    match(FOR);
+
+    expression();
+    match(TO);
+    expression();
+
+    /**/printf(".L%i:\n", label_for = label_counter);/**/
+    /**/label_counter++;/**/
+    /**/printf("\tje .L%i\n", label_end_for);/**/
+
+    match(DO);
+
+    stmt();
+
+    /**/printf("\tgoto .L%i\n", label_for);/**/
+    /**/printf(".L%i\n", label_end_for);/**/
+
+}
+
 /**
 * stmtlist -> stmt ; {stmt ;}
 * stmt -> begin_end | ifstmt | whilestmt | repstmt | forstmt | idstmt
@@ -318,12 +340,7 @@ void stmt(void)
         repeatstmt();
         break;
     case FOR:
-        match(FOR);
-        expression();
-        match(TO);
-        expression();
-        match(DO);
-        stmt();
+        forstmt();
         break;
     case CASE:
         match(CASE);
