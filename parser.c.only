@@ -62,6 +62,18 @@ _parm_spec:
     }
 }
 
+void constant(void)
+{
+   /* if (lookahead == ){
+        match(''');
+        match(STRCONST);
+    } else {
+        if (lookahead == '+' || lookahead == '-')
+            match(lookahead);
+        expression();
+    }*/
+}
+
 void simple_type(void)
 {
     switch(lookahead){
@@ -73,12 +85,12 @@ void simple_type(void)
         idlist();
         match(')');
         break;
-    case UINT: case FLOAT: case STRCONST: case ID:
+    case UINT: case DOUBLE: case STRCONST: case ID:
         match(lookahead);
         match('.');
         match('.');
         switch(lookahead){
-        case UINT: case FLOAT: case STRCONST: case ID:
+        case UINT: case DOUBLE: case STRCONST: case ID:
             match(lookahead);
             break;
         }
@@ -122,11 +134,11 @@ void type (void)
             match(OF);
             type();
             break;
-        }
         default:
             match(RECORD);
-            field_list();
+            //field_list();
             match(END);
+        }
     }
 }
 
@@ -184,7 +196,7 @@ void expr(void)
     case '+':case '-':case NOT:
         match(lookahead);
     }
-_plus_term:
+_plus_term:double
     term();
     switch(lookahead){
     case'+':case'-':case OR:
@@ -216,7 +228,7 @@ void fact(void)
             expression();
         }
         break;
-    case UINT:case FLOAT:case STRCONST:case TRUE:case FALSE:
+    case UINT:case DOUBLE:case STRCONST:case TRUE:case FALSE:
         match(lookahead);
         break;
     default:
@@ -236,7 +248,7 @@ UINT_list:
             match(',');
             goto UINT_list;
         }
-        match(';');
+        match(':');
     }
 }
 
@@ -247,10 +259,11 @@ void const_pas()
 const_list:
         match(ID);
         match('=');
-        switch(lookahead){
-        case UINT: case FLOAT: case STRCONST:
+        /*switch(lookahead){
+        case UINT: case DOUBLE: case STRCONST:
             match(lookahead);
-        }
+        }*/
+        match(UINT);
         match(';');
         if (lookahead == ID)
             goto const_list;

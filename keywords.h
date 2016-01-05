@@ -34,11 +34,11 @@ enum {
     FALSE,
     ARRAY,
     OF,
-    END,
     LABEL,
     CONST,
     TYPE,
     PACKED,
     SET,
-    RECORD
+    RECORD,
+    END
 };
