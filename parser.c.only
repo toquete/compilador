@@ -64,14 +64,19 @@ _parm_spec:
 
 void constant(void)
 {
-   /* if (lookahead == ){
-        match(''');
+    if (lookahead == STRCONST)
         match(STRCONST);
-    } else {
+    else {
         if (lookahead == '+' || lookahead == '-')
             match(lookahead);
-        expression();
-    }*/
+        switch(lookahead){
+        case ID:
+            match(ID);
+            break;
+        default:
+            match(UINT);
+        }
+    }
 }
 
 void simple_type(void)
@@ -85,16 +90,11 @@ void simple_type(void)
         idlist();
         match(')');
         break;
-    case UINT: case DOUBLE: case STRCONST: case ID:
-        match(lookahead);
+    default:
+        constant();
         match('.');
         match('.');
-        switch(lookahead){
-        case UINT: case DOUBLE: case STRCONST: case ID:
-            match(lookahead);
-            break;
-        }
-        break;
+        constant();
     }
 }
 
@@ -196,7 +196,7 @@ void expr(void)
     case '+':case '-':case NOT:
         match(lookahead);
     }
-_plus_term:double
+_plus_term:
     term();
     switch(lookahead){
     case'+':case'-':case OR:
@@ -228,7 +228,7 @@ void fact(void)
             expression();
         }
         break;
-    case UINT:case DOUBLE:case STRCONST:case TRUE:case FALSE:
+    case UINT:case FLOAT:case STRCONST:case TRUE:case FALSE:
         match(lookahead);
         break;
     default:
