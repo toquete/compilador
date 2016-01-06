@@ -31,6 +31,23 @@ void            mypas(void);
 void            stmt(void);
 void            stmtlist(void);
 void            proc_func(void);
+void            type(void);
+void            simple_type(void);
+void            typeidentifier(void);
+void            idlist (void);
+void            constantlist(void);
+void            parmlist (void);
+void            constant(void);
+int             istypeidentifier(void);
+void            fieldlist(void);
+void            range(void);
+int             isrelop(int lookahead);
+void            expression (void);
+void            label(void);
+void            const_pas(void);
+void            type_pas(void);
+void            var(void);
+void            body (void);
 
 #define MAXSTACKSIZE 0x100
 extern double   E_val[MAXSTACKSIZE];

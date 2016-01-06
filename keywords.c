@@ -40,6 +40,7 @@ char *keyword[] = {
     "packed",
     "set",
     "record",
+    "file",
     "end"
 };
 

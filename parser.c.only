@@ -11,8 +11,6 @@
 #include <lexer.h>
 #include <keywords.h>
 
-void stmtlist(void);
-
 /**
  * Top-down recursive parser emulating an EBNF for the simplified
  * Pascal (MyPas):
@@ -32,13 +30,13 @@ ID_list:
     }
 }
 
-void caselist(void)
+void constantlist(void)
 {
-case_list:
-    match(STRCONST);
+constant_list:
+    constant();
     if (lookahead == ','){
         match(',');
-        goto case_list;
+        goto constant_list;
     }
 }
 
@@ -53,6 +51,8 @@ _parm_spec:
             if(lookahead == VAR)
                 match(VAR);
             idlist();
+            match(':');
+            typeidentifier();
         }
         if(lookahead==';'){
             match(';');
@@ -79,23 +79,59 @@ void constant(void)
     }
 }
 
-void simple_type(void)
+void typeidentifier(void)
+{
+    switch(lookahead){
+    case INTEGER:
+        match(INTEGER);
+        break;
+    case REAL:
+        match(REAL);
+        break;
+    case DOUBLE:
+        match(DOUBLE);
+        break;
+    case BOOLEAN:
+        match(BOOLEAN);
+        break;
+    default:
+        match(STRING);
+    }
+}
+
+int istypeidentifier(void)
 {
     switch(lookahead){
     case INTEGER:case REAL:case DOUBLE:case BOOLEAN:case STRING:
-        match(lookahead);
-        break;
-    case '(':
-        match('(');
-        idlist();
-        match(')');
-        break;
-    default:
-        constant();
-        match('.');
-        match('.');
-        constant();
+        return lookahead;
     }
+
+    return 0;
+}
+
+void simple_type(void)
+{
+    if (istypeidentifier())
+        typeidentifier();
+    else{
+        switch(lookahead){
+        case '(':
+            match('(');
+            idlist();
+            match(')');
+            break;
+        default:
+            constant();
+            match('.');
+            match('.');
+            constant();
+        }
+    }
+}
+
+void fieldlist(void)
+{
+
 }
 
 void range(void)
@@ -114,11 +150,7 @@ void type (void)
 {
     if (lookahead == '^'){
         match('^');
-        switch(lookahead){
-        case INTEGER:case REAL:case DOUBLE:case BOOLEAN:case STRING:
-            match(lookahead);
-            break;
-        }
+        typeidentifier();
     } else {
         if (lookahead == PACKED)
             match(PACKED);
@@ -134,10 +166,16 @@ void type (void)
             match(OF);
             type();
             break;
-        default:
+        case RECORD:
             match(RECORD);
             //field_list();
             match(END);
+        case pasFILE:
+            match(pasFILE);
+            match(OF);
+            type();
+        default:
+            simple_type();
         }
     }
 }
@@ -238,7 +276,7 @@ void fact(void)
     }
 }
 
-void label()
+void label(void)
 {
     if (lookahead == LABEL){
         match(LABEL);
@@ -248,29 +286,25 @@ UINT_list:
             match(',');
             goto UINT_list;
         }
-        match(':');
+        match(';');
     }
 }
 
-void const_pas()
+void const_pas(void)
 {
     if (lookahead == CONST){
         match(CONST);
 const_list:
         match(ID);
         match('=');
-        /*switch(lookahead){
-        case UINT: case DOUBLE: case STRCONST:
-            match(lookahead);
-        }*/
-        match(UINT);
+        constant();
         match(';');
         if (lookahead == ID)
             goto const_list;
     }
 }
 
-void type_pas()
+void type_pas(void)
 {
     if (lookahead == TYPE){
         match(TYPE);
@@ -284,7 +318,7 @@ type_list:
     }
 }
 
-void var()
+void var(void)
 {
     while (lookahead == VAR) {
         match (VAR);
@@ -298,7 +332,7 @@ ID_list_2:
     }
 }
 
-void proc_func()
+void proc_func(void)
 {
     switch (lookahead) {
     case PROCEDURE:
@@ -311,8 +345,7 @@ void proc_func()
         match(ID);
         parmlist();
         match(':');
-        type();
-        match(ID);
+        typeidentifier();
     }
 }
 
@@ -399,7 +432,7 @@ void stmt(void)
         expression();
         match(OF);
 case_list:
-        caselist();
+        constantlist();
         match(':');
         stmt();
         if (lookahead == ';'){

@@ -40,5 +40,6 @@ enum {
     PACKED,
     SET,
     RECORD,
+    pasFILE,
     END
 };
