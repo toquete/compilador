@@ -10,6 +10,7 @@
 #include <tokens.h>
 #include <lexer.h>
 #include <keywords.h>
+#include <symtab.h>
 
 /**/ int label_counter = 1; /**/
 
@@ -22,10 +23,23 @@
  * body -> { VAR ID { , ID } : type ; { ID { , ID } : type ; } }
  *       | { PROCEDURE ID parmlist ; body ; | FUNCTION ID parmlist : type ; body ; }
  */
-void idlist (void)
+
+/** lexical-level counter is a semantic operator**/
+int lexlevel = 0;
+/**                                            **/
+
+#define SETUP 1
+#define NILL  0
+
+int idlist_first,idlist_last ;
+
+void idlist (int id_setup)
 {
 ID_list: 
     match(ID);
+    /**at this point lookahead has its counterpart named lexeme,
+     * which stores the sting assigned as ID**/
+    /**/if (id_setup) symtab_append(lexeme, lexlevel);/**/
     if (lookahead == ',') {
         match (',');
         goto ID_list;
@@ -49,7 +63,7 @@ void parmlist (void)
 _parm_spec:
         if(lookahead == VAR)
             match(VAR);
-        idlist();
+        idlist(SETUP);
         if(lookahead==';'){
             match(';');
             goto _parm_spec;
@@ -70,17 +84,19 @@ _UINT_list:
     match(']');
 }
 
-void type (void)
+void type (int first, int last)
 {
     switch(lookahead){
     case INTEGER:case REAL:case DOUBLE:case BOOLEAN:case STRING:
         match(lookahead);
         break;
     default:
+        idlist_first = symtab_append(lexeme, lexlevel);
+         idlist_last = idlist_first + 1;
         match(ARRAY);
         range();
         match(OF);
-        type();
+        type(idlist_first, idlist_last);
     }
 }
 
@@ -134,7 +150,7 @@ void expr(void)
         match(ID);
         parmlist();
         match(':');
-        type();
+        type(0,0);
     case '+':case '-':case NOT:
         match(lookahead);
     }
@@ -184,10 +200,12 @@ void body (void)
 {
     while (lookahead == VAR) {
         match (VAR);
+        /**/idlist_first = symtab_next;/**/
 ID_list_2:
-        idlist();
+        idlist(SETUP);
         match(':');
-        type();
+        /**/idlist_last = symtab_next;/**/
+        type(idlist_first, idlist_last);
         match(';');
         if (lookahead == ID)
             goto ID_list_2;
@@ -204,7 +222,7 @@ ID_list_2:
             match(ID);
             parmlist();
             match(':');
-            type();
+            type(0,0);
             match(ID);
         }
         match(';');
