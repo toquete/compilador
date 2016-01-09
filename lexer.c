@@ -101,7 +101,7 @@ is_NUM(FILE * tape)
             lexeme[lexcursor] = getc(tape);
         }
         if (lexeme[lexcursor] == '.') {
-	  numtype = FLOAT;
+            numtype = FLOAT;
             lexcursor++;
             while (isdigit(lexeme[lexcursor] = getc(tape)))
                 lexcursor++;

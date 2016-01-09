@@ -48,6 +48,19 @@ void            const_pas(void);
 void            type_pas(void);
 void            var(void);
 void            body (void);
+void            field_list(void);
+void            variable(void);
+void            expr_list(void);
+void            idstmt(void);
+void            beginstmt(void);
+void            ifstmt(void);
+void            whilestmt(void);
+void            repeatstmt(void);
+void            forstmt(void);
+void            casestmt(void);
+void            variablelist(void);
+void            withstmt(void);
+void            gotostmt(void);
 
 #define MAXSTACKSIZE 0x100
 extern double   E_val[MAXSTACKSIZE];

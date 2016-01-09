@@ -8,6 +8,7 @@ enum {
     BEGIN = 1025,
     FOR,
     TO,
+    DOWNTO,
     DO,
     WHILE,
     REPEAT,
@@ -41,5 +42,8 @@ enum {
     SET,
     RECORD,
     pasFILE,
+    WITH,
+    GOTO,
+    IN,
     END
 };

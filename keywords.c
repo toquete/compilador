@@ -8,6 +8,7 @@ char *keyword[] = {
     "begin",
     "for",
     "to",
+    "downto",
     "do",
     "while",
     "repeat",
@@ -41,6 +42,9 @@ char *keyword[] = {
     "set",
     "record",
     "file",
+    "with",
+    "goto",
+    "in",
     "end"
 };
 
