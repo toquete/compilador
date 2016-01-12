@@ -20,14 +20,14 @@
 int
 skipcomments(FILE * tape)
 {
-    int             head;
+    int head;
 
 _skipspaces:
     while (isspace(head = getc(tape)));
-    if(head == '{') {
-	    while((head = getc(tape)) != '}') {
-		if (head == EOF)
-                    return EOF;
+    if (head == '{') {
+        while ((head = getc(tape)) != '}') {
+            if (head == EOF)
+                return EOF;
 	    }
 	    goto _skipspaces;
     } else {
@@ -132,6 +132,23 @@ is_NUM(FILE * tape)
     return numtype;
 }
 
+int
+is_STRING(FILE * tape)
+{
+    int lookahead = getc(tape);
+    if (lookahead == '\'') {
+        while((lookahead = getc(tape)) != '\'') {
+            if (lookahead == EOF)
+                return EOF;
+        }
+
+        return STRCONST;
+    }
+
+    ungetc(lookahead, tape);
+    return 0;
+}
+
 /*
  * visible module is gettokent below: 
  */
@@ -139,7 +156,7 @@ is_NUM(FILE * tape)
 int
 gettoken(FILE * tape)
 {
-    int             token;
+    int token;
 
     if ((token = skipcomments(tape)))
         return token;
@@ -148,6 +165,9 @@ gettoken(FILE * tape)
         return token;
 
     if ((token = is_NUM(tape)))
+        return token;
+
+    if ((token = is_STRING(tape)))
         return token;
 
     return token = getc(tape);

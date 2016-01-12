@@ -12,18 +12,19 @@ type
 var
 	kjdhb: integer;
 	asd, vpoe, djlkh, oh: real;
-procedure proc (asd, asd);
+procedure proc (asd, asd: integer);
 begin
 end;
 procedure proc2;
 begin
-	while a < b then
+	while a < b do
 	begin
-		xabale();
+		xabale(asd, 123);
 	end;
 end;
 begin
 for ab:=0 to 5 do
 	guizao := 24;
+teste := 'reasd';
 end.
 

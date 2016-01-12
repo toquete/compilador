@@ -22,7 +22,7 @@
  */
 void idlist (void)
 {
-ID_list: 
+ID_list:
     match(ID);
     if (lookahead == ',') {
         match (',');
