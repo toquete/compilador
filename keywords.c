@@ -45,6 +45,7 @@ char *keyword[] = {
     "with",
     "goto",
     "in",
+    "nil",
     "end"
 };
 
