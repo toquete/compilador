@@ -2,7 +2,7 @@ program teste (xablau, xablau, xablau);
 label
 	123, 321, 24;
 const
-	asd = 321;
+	asd = 321.98;
 	dsa = 56;
 type
 	fdsg = integer;
@@ -12,6 +12,12 @@ type
 var
 	kjdhb: integer;
 	asd, vpoe, djlkh, oh: real;
+	rec: record 
+		a,b: double;
+		case c: integer of
+		    'teste': (d, e: string);
+		     5.68: (f, g: integer)
+	     end;
 procedure proc (asd, asd: integer);
 begin
 end;

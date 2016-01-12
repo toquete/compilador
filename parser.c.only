@@ -73,8 +73,11 @@ void constant(void)
         case ID:
             match(ID);
             break;
-        default:
+        case UINT:
             match(UINT);
+            break;
+        default:
+            match(UFLOAT);
         }
     }
 }
