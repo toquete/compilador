@@ -333,7 +333,7 @@ void fact(void)
             expression();
         }
         break;
-    case UINT:case FLOAT:case STRCONST:case TRUE:case FALSE:case NIL:
+    case UINT:case UFLOAT:case STRCONST:case TRUE:case FALSE:case NIL:
         match(lookahead);
         break;
     default:

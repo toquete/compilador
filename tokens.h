@@ -8,7 +8,7 @@ enum {
     MULOP,
     ID,
     UINT,
-    FLOAT,
+    UFLOAT,
     STRCONST,
     GEQ,
     LEQ,

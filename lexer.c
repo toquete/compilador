@@ -73,58 +73,63 @@ is_ID(FILE * tape)
 }
 
 /*
- * EXP = ('e'|'E')('+'|'-')?[0-9]+
- */
-int
-is_EXP(FILE * tape)
-{
-    lexeme[lexcursor] = getc(tape);
-}
-
-/*
- * NUM = [1-9][0-9]* | '0'
+ * digit = [0-9]
+ * number = '0'|[1-9][0-9]*
+ * exp = ('e'|'E')('+'|'-')?digit+
+ * NUM = number(\.digit*)?exp?|\.digit+exp?
  */
 int
 is_NUM(FILE * tape)
 {
     int numtype = 0;
     lexcursor = 0;
-    lexeme[lexcursor] = getc(tape);
-    if (isdigit(lexeme[lexcursor])) {
+
+    if (isdigit(lexeme[lexcursor] = getc(tape))) {
         numtype = UINT;
-        if (lexeme[lexcursor] != '0') {
-            lexcursor++;
-            while (isdigit(lexeme[lexcursor] = getc(tape)))
-                lexcursor++;
+        if (lexeme[lexcursor] == '0') {
+            if ((lexeme[++lexcursor] = getc(tape)) == '.') {
+                numtype = UFLOAT;
+                while (isdigit(lexeme[++lexcursor] = getc(tape)));
+            }
         } else {
-            lexcursor++;
-            lexeme[lexcursor] = getc(tape);
+            while (isdigit(lexeme[++lexcursor] = getc(tape)));
+            if (lexeme[lexcursor] == '.') {
+                numtype = UFLOAT;
+                while (isdigit(lexeme[++lexcursor] = getc(tape)));
+            }
         }
-        if (lexeme[lexcursor] == '.') {
-            numtype = FLOAT;
-            lexcursor++;
-            while (isdigit(lexeme[lexcursor] = getc(tape)))
-                lexcursor++;
+    } else if (lexeme[lexcursor] == '.') {
+        if (isdigit(lexeme[++lexcursor] = getc(tape))) {
+            numtype = UFLOAT;
+            while (isdigit(lexeme[++lexcursor] = getc(tape)));
+        } else {
+            ungetc(lexeme[lexcursor--], tape);
         }
-        ungetc(lexeme[lexcursor], tape);
-        lexeme[lexcursor] = 0;
-        return numtype;
     }
-    if (lexeme[lexcursor] == '.') {
-        lexcursor++;
-        if (isdigit(lexeme[lexcursor] = getc(tape))) {
-            lexcursor++;
-            while (isdigit(lexeme[lexcursor] = getc(tape)))
-                lexcursor++;
-            ungetc(lexeme[lexcursor], tape);
-            lexeme[lexcursor] = 0;
-            return FLOAT;
+
+    if (numtype) {
+        int lexcursorCheck = lexcursor;
+        if (tolower(lexeme[lexcursor]) == 'e') {
+            lexeme[++lexcursor] = getc(tape);
+
+            if (lexeme[lexcursor] == '+' || lexeme[lexcursor] == '-') {
+                lexeme[++lexcursor] = getc(tape);
+            }
+
+            if (isdigit(lexeme[lexcursor])) {
+                numtype = UFLOAT;
+                while (isdigit(lexeme[++lexcursor] = getc(tape)));
+            } else {
+                while (lexcursor > lexcursorCheck) {
+                    ungetc(lexeme[lexcursor--], tape);
+                }
+            }
         }
-        ungetc(lexeme[lexcursor], tape);
-        lexcursor--;
     }
+
     ungetc(lexeme[lexcursor], tape);
-    return 0;
+    lexeme[lexcursor] = 0;
+    return numtype;
 }
 
 /*
