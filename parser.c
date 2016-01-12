@@ -170,7 +170,7 @@ void fact(void)
             expression();
         }
         break;
-    case UINT:case FLOAT:case STRCONST:case TRUE:case FALSE:
+    case UINT:case UFLOAT:case STRCONST:case TRUE:case FALSE:
         match(lookahead);
         break;
     default:
