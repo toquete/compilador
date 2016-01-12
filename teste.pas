@@ -15,7 +15,7 @@ var
 procedure proc (asd, asd: integer);
 begin
 end;
-procedure proc2;
+procedure proc2(var teste: integer; procedure novoteste);
 begin
 	while a < b do
 	begin

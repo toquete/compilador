@@ -430,7 +430,7 @@ void body (void)
         match(';');
     }
 
-    stmtlist();
+    beginstmt();
 }
 
 void mypas (void)
