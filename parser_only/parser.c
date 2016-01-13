@@ -283,7 +283,7 @@ void type (void)
     }
 }
 
-int isrelop(int lookahead)
+int isrelop()
 {
     switch(lookahead){
     case '>':
@@ -318,21 +318,21 @@ int isrelop(int lookahead)
 void expression (void)
 {
     expr();
-    if(isrelop(lookahead)){
+    if (isrelop()) {
         expr();
     }
 }
 
 void expr(void)
 {
-    switch(lookahead){
-    case '+':case '-':
+    switch (lookahead) {
+    case '+': case '-':
         match(lookahead);
     }
 _plus_term:
     term();
-    switch(lookahead){
-    case'+':case'-':case OR:
+    switch (lookahead) {
+    case '+': case '-': case OR:
         match(lookahead);
         goto _plus_term;
     }
@@ -484,9 +484,13 @@ void mypas (void)
 {
     match(PROGRAM);
     match(ID);
-    match('(');
-    idlist();
-    match(')');
+
+    if (lookahead == '(') {
+        match('(');
+        idlist();
+        match(')');
+    }
+
     match(';');
     body();
     match('.');
@@ -669,7 +673,7 @@ int stmt(void)
 void stmtlist(void)
 {
 stmt_list:
-    if (stmt()) {
+    if (stmt() && lookahead == ';') {
         match(';');
         goto stmt_list;
     }
@@ -692,7 +696,12 @@ void match(int predicted)
                     linecursor[linecount] + 1 - lexcursor,
                     keyword[predicted - BEGIN],
                     lexeme);
-        } else {
+        } else if (!predicted) {
+            fprintf(stderr, "Error:%d:%d: '%s' not expected\n",
+                    linecount + 1,
+                    linecursor[linecount] + 1 - lexcursor,
+                    lexeme);
+        } else  {
             fprintf(stderr, "Error:%d:%d: expected '%c' but was '%s'\n",
                     linecount + 1,
                     linecursor[linecount] + 1 - lexcursor,

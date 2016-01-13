@@ -41,7 +41,7 @@ void            constant(void);
 int             istypeidentifier(void);
 void            fieldlist(void);
 void            range(void);
-int             isrelop(int lookahead);
+int             isrelop(void);
 void            expression (void);
 void            label(void);
 void            const_pas(void);

@@ -85,30 +85,62 @@ is_NUM(FILE * tape)
     int numtype = 0;
     lexcursor = 0;
 
-    if (isdigit(lexeme[lexcursor] = _getc(tape))) {
+    int isRange = 0;
+
+    fseek(tape, -1, SEEK_CUR);
+    int isFirstPoint = _getc(tape) == '.';
+
+    lexeme[lexcursor] = _getc(tape);
+
+    if (isFirstPoint && lexeme[lexcursor] == '.') {
+        goto end_is_NUM;
+    }
+
+    if (isdigit(lexeme[lexcursor])) {
         numtype = UINT;
         if (lexeme[lexcursor] == '0') {
             if ((lexeme[++lexcursor] = _getc(tape)) == '.') {
-                numtype = UFLOAT;
-                while (isdigit(lexeme[++lexcursor] = _getc(tape)));
+                if ((lexeme[++lexcursor] = _getc(tape)) == '.') {
+                    lexcursor--;
+                    _ungetc('.', tape);
+                    isRange = 1;
+                } else {
+                    numtype = UFLOAT;
+                    if (isdigit(lexeme[lexcursor]))
+                        while (isdigit(lexeme[++lexcursor] = _getc(tape)));
+                }
             }
         } else {
             while (isdigit(lexeme[++lexcursor] = _getc(tape)));
             if (lexeme[lexcursor] == '.') {
-                numtype = UFLOAT;
-                while (isdigit(lexeme[++lexcursor] = _getc(tape)));
+                if ((lexeme[++lexcursor] = _getc(tape)) == '.') {
+                    lexcursor--;
+                    _ungetc('.', tape);
+                    isRange = 1;
+                } else {
+                    numtype = UFLOAT;
+                    if (isdigit(lexeme[lexcursor]))
+                        while (isdigit(lexeme[++lexcursor] = _getc(tape)));
+                }
             }
         }
     } else if (lexeme[lexcursor] == '.') {
         if (isdigit(lexeme[++lexcursor] = _getc(tape))) {
-            numtype = UFLOAT;
-            while (isdigit(lexeme[++lexcursor] = _getc(tape)));
+            if ((lexeme[++lexcursor] = _getc(tape)) == '.') {
+                lexcursor--;
+                _ungetc('.', tape);
+                isRange = 1;
+            } else {
+                numtype = UFLOAT;
+                if (isdigit(lexeme[lexcursor]))
+                    while (isdigit(lexeme[++lexcursor] = _getc(tape)));
+            }
         } else {
             _ungetc(lexeme[lexcursor--], tape);
         }
     }
 
-    if (numtype) {
+    if (numtype && !isRange) {
         int lexcursorCheck = lexcursor;
         if (tolower(lexeme[lexcursor]) == 'e') {
             lexeme[++lexcursor] = _getc(tape);
@@ -128,6 +160,7 @@ is_NUM(FILE * tape)
         }
     }
 
+end_is_NUM:
     _ungetc(lexeme[lexcursor], tape);
     lexeme[lexcursor] = 0;
     return numtype;

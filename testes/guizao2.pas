@@ -23,9 +23,8 @@ menor = 2995.70         15%
 menor = 3743.19         22.5%
 maior 3743.19)          27.5%}
 
-program ex;
+program ex(teste);
 
-uses crt;
 var
 sb,ad,nf,he,qd,aa:real;
 a,b,c,d,e,f,g,h:real;
@@ -97,7 +96,7 @@ h:= 0 ;
 f:= (sb+a+c+g+h-d-e) ;
 
 writeln;
-writeln('salario liquido R$ ',f:2:2);
+writeln('salario liquido R$ ',f);
 
 readkey;
 end.

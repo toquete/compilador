@@ -1,8 +1,6 @@
-program pessoal;
-uses crt;
+program pessoal(guizao);
 var
 idade,homens,mulheres,mulheresa,homensa:integer;
-resp,sexo:char;
 nome:string;
 porc:real;
 
@@ -43,6 +41,6 @@ until resp='n';
 
 writeln('Numero de homens: ',homens);
 writeln('Numero de mulheres acima de 18 anos: ',mulheresa);
-writeln('Porcentagem de homens acima de 25 anos: ',porc:2:2);
+writeln('Porcentagem de homens acima de 25 anos: ',porc);
 readkey;
 end.

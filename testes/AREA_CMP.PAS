@@ -1,5 +1,4 @@
 program area_e_comp;
-uses crt;
 
 var
 raio:integer;
