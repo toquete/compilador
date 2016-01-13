@@ -28,7 +28,7 @@ void            term(void);
 void            fact(void);
 void            match(int);
 void            mypas(void);
-void            stmt(void);
+int             stmt(void);
 void            stmtlist(void);
 void            proc_func(void);
 void            type(void);
@@ -41,7 +41,7 @@ void            constant(void);
 int             istypeidentifier(void);
 void            fieldlist(void);
 void            range(void);
-int             isrelop(int lookahead);
+int             isrelop(void);
 void            expression (void);
 void            label(void);
 void            const_pas(void);
@@ -61,6 +61,9 @@ void            casestmt(void);
 void            variablelist(void);
 void            withstmt(void);
 void            gotostmt(void);
+int             isuconstant(void);
+void            uconstant(void);
+int             isconstant(void);
 
 #define MAXSTACKSIZE 0x100
 extern double   E_val[MAXSTACKSIZE];

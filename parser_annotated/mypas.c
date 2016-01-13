@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
             exit(-2);
         }
     } else {
-        tape = fopen("../teste.pas", "r");
+        tape = fopen("../teste2.pas", "r");
         if (tape == NULL) {
             fprintf(stderr, "file not found... exiting\n");
             exit(-2);

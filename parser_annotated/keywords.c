@@ -3,6 +3,7 @@
  */
 #include <string.h>
 #include <keywords.h>
+#include <utils.h>
 
 char *keyword[] = {
     "begin",
@@ -54,7 +55,7 @@ is_keyword(char *identifier)
 {
     int             i;
     for (i = BEGIN; i <= END; i++) {
-        if (strcmp(identifier, keyword[i - BEGIN]) == 0)
+        if (_strcmp(identifier, keyword[i - BEGIN]) == 0)
             return i;
     }
     return 0;

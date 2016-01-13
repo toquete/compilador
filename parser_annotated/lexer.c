@@ -8,6 +8,7 @@
 #include <lexer.h>
 #include <tokens.h>
 #include <keywords.h>
+#include <utils.h>
 
 /*
  * automata cock-tail 
@@ -23,15 +24,15 @@ skipcomments(FILE * tape)
     int head;
 
 _skipspaces:
-    while (isspace(head = getc(tape)));
+    while (isspace(head = _getc(tape)));
     if (head == '{') {
-        while ((head = getc(tape)) != '}') {
+        while ((head = _getc(tape)) != '}') {
             if (head == EOF)
                 return EOF;
 	    }
 	    goto _skipspaces;
     } else {
-	    ungetc(head, tape);
+        _ungetc(head, tape);
     }
     return 0;
 }
@@ -49,15 +50,15 @@ int
 is_ID(FILE * tape)
 {
     lexcursor = 0;
-    lexeme[lexcursor] = getc(tape);
+    lexeme[lexcursor] = _getc(tape);
     if (isalpha(lexeme[lexcursor])) {
         lexcursor++;
-        while (isalpha(lexeme[lexcursor] = getc(tape)) ||
+        while (isalpha(lexeme[lexcursor] = _getc(tape)) ||
                isdigit(lexeme[lexcursor]) || lexeme[lexcursor] == '_') {
             if (lexcursor < MAXIDLEN)
                 lexcursor++;
         }
-        ungetc(lexeme[lexcursor], tape);
+        _ungetc(lexeme[lexcursor], tape);
         lexeme[lexcursor] = 0;
 
         int id;
@@ -68,7 +69,7 @@ is_ID(FILE * tape)
 
         return ID;
     }
-    ungetc(lexeme[lexcursor], tape);
+    _ungetc(lexeme[lexcursor], tape);
     return 0;
 }
 
@@ -84,50 +85,83 @@ is_NUM(FILE * tape)
     int numtype = 0;
     lexcursor = 0;
 
-    if (isdigit(lexeme[lexcursor] = getc(tape))) {
+    int isRange = 0;
+
+    fseek(tape, -1, SEEK_CUR);
+    int isFirstPoint = _getc(tape) == '.';
+
+    lexeme[lexcursor] = _getc(tape);
+
+    if (isFirstPoint && lexeme[lexcursor] == '.') {
+        goto end_is_NUM;
+    }
+
+    if (isdigit(lexeme[lexcursor])) {
         numtype = UINT;
         if (lexeme[lexcursor] == '0') {
-            if ((lexeme[++lexcursor] = getc(tape)) == '.') {
-                numtype = UFLOAT;
-                while (isdigit(lexeme[++lexcursor] = getc(tape)));
+            if ((lexeme[++lexcursor] = _getc(tape)) == '.') {
+                if ((lexeme[++lexcursor] = _getc(tape)) == '.') {
+                    lexcursor--;
+                    _ungetc('.', tape);
+                    isRange = 1;
+                } else {
+                    numtype = UFLOAT;
+                    if (isdigit(lexeme[lexcursor]))
+                        while (isdigit(lexeme[++lexcursor] = _getc(tape)));
+                }
             }
         } else {
-            while (isdigit(lexeme[++lexcursor] = getc(tape)));
+            while (isdigit(lexeme[++lexcursor] = _getc(tape)));
             if (lexeme[lexcursor] == '.') {
-                numtype = UFLOAT;
-                while (isdigit(lexeme[++lexcursor] = getc(tape)));
+                if ((lexeme[++lexcursor] = _getc(tape)) == '.') {
+                    lexcursor--;
+                    _ungetc('.', tape);
+                    isRange = 1;
+                } else {
+                    numtype = UFLOAT;
+                    if (isdigit(lexeme[lexcursor]))
+                        while (isdigit(lexeme[++lexcursor] = _getc(tape)));
+                }
             }
         }
     } else if (lexeme[lexcursor] == '.') {
-        if (isdigit(lexeme[++lexcursor] = getc(tape))) {
-            numtype = UFLOAT;
-            while (isdigit(lexeme[++lexcursor] = getc(tape)));
+        if (isdigit(lexeme[++lexcursor] = _getc(tape))) {
+            if ((lexeme[++lexcursor] = _getc(tape)) == '.') {
+                lexcursor--;
+                _ungetc('.', tape);
+                isRange = 1;
+            } else {
+                numtype = UFLOAT;
+                if (isdigit(lexeme[lexcursor]))
+                    while (isdigit(lexeme[++lexcursor] = _getc(tape)));
+            }
         } else {
-            ungetc(lexeme[lexcursor--], tape);
+            _ungetc(lexeme[lexcursor--], tape);
         }
     }
 
-    if (numtype) {
+    if (numtype && !isRange) {
         int lexcursorCheck = lexcursor;
         if (tolower(lexeme[lexcursor]) == 'e') {
-            lexeme[++lexcursor] = getc(tape);
+            lexeme[++lexcursor] = _getc(tape);
 
             if (lexeme[lexcursor] == '+' || lexeme[lexcursor] == '-') {
-                lexeme[++lexcursor] = getc(tape);
+                lexeme[++lexcursor] = _getc(tape);
             }
 
             if (isdigit(lexeme[lexcursor])) {
                 numtype = UFLOAT;
-                while (isdigit(lexeme[++lexcursor] = getc(tape)));
+                while (isdigit(lexeme[++lexcursor] = _getc(tape)));
             } else {
                 while (lexcursor > lexcursorCheck) {
-                    ungetc(lexeme[lexcursor--], tape);
+                    _ungetc(lexeme[lexcursor--], tape);
                 }
             }
         }
     }
 
-    ungetc(lexeme[lexcursor], tape);
+end_is_NUM:
+    _ungetc(lexeme[lexcursor], tape);
     lexeme[lexcursor] = 0;
     return numtype;
 }
@@ -135,9 +169,9 @@ is_NUM(FILE * tape)
 int
 is_STRING(FILE * tape)
 {
-    int lookahead = getc(tape);
+    int lookahead = _getc(tape);
     if (lookahead == '\'') {
-        while((lookahead = getc(tape)) != '\'') {
+        while((lookahead = _getc(tape)) != '\'') {
             if (lookahead == EOF)
                 return EOF;
         }
@@ -145,7 +179,7 @@ is_STRING(FILE * tape)
         return STRCONST;
     }
 
-    ungetc(lookahead, tape);
+    _ungetc(lookahead, tape);
     return 0;
 }
 
@@ -170,5 +204,5 @@ gettoken(FILE * tape)
     if ((token = is_STRING(tape)))
         return token;
 
-    return token = getc(tape);
+    return token = _getc(tape);
 }

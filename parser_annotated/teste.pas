@@ -18,19 +18,25 @@ var
 		    'teste': (d, e: string);
 		     5.68: (f, g: integer)
 	     end;
-procedure proc (asd, asd: integer);
+function proc (asd, asd: integer): boolean;
 begin
+  for i := 0 downto c do
+  begin
+  end;
 end;
-procedure proc2(var teste: integer; procedure novoteste);
+
+procedure proc2(var teste: integer; procedure novoteste(x: double));
 begin
-	while a < b do
+	while a < b do 
 	begin
 		xabale(asd, 123);
+		xablau;
 	end;
 end;
 begin
 for ab:=0 to 5 do
 	guizao := 24;
+h := (not b) and c;
 teste := 'reasd';
 end.
 
