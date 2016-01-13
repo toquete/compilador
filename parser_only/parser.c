@@ -62,6 +62,16 @@ _parm_spec:
     }
 }
 
+int isconstant(void)
+{
+    switch(lookahead){
+    case '+': case '-': case ID: case UINT: case UFLOAT: case STRCONST:
+        return lookahead;
+    }
+
+    return 0;
+}
+
 void constant(void)
 {
     if (lookahead == STRCONST)
@@ -80,6 +90,33 @@ void constant(void)
             match(UFLOAT);
         }
     }
+}
+
+void uconstant(void)
+{
+    switch(lookahead){
+    case UINT:
+        match(UINT);
+        break;
+    case UFLOAT:
+        match(UFLOAT);
+        break;
+    case NIL:
+        match(NIL);
+        break;
+    default:
+        match(STRCONST);
+    }
+}
+
+int isuconstant(void)
+{
+    switch (lookahead) {
+    case UINT: case UFLOAT: case NIL: case STRCONST:
+        return lookahead;
+    }
+
+    return 0;
 }
 
 void typeidentifier(void)
@@ -212,7 +249,9 @@ _UINT_list:
 
 void type (void)
 {
-    if (lookahead == '^'){
+    if(istypeidentifier() || isconstant() || lookahead == '(')
+        simple_type();
+    else if (lookahead == '^'){
         match('^');
         typeidentifier();
     } else {
@@ -235,14 +274,10 @@ void type (void)
             field_list();
             match(END);
             break;
-        case pasFILE:
+        default:
             match(pasFILE);
             match(OF);
             type();
-            break;
-        default:
-            simple_type();
-            break;
         }
     }
 }
@@ -290,18 +325,7 @@ void expression (void)
 void expr(void)
 {
     switch(lookahead){
-    case PROCEDURE:
-        match(PROCEDURE);
-        match(ID);
-        parmlist();
-        break;
-    case FUNCTION:
-        match(FUNCTION);
-        match(ID);
-        parmlist();
-        match(':');
-        type();
-    case '+':case '-':case NOT:
+    case '+':case '-':
         match(lookahead);
     }
 _plus_term:
@@ -328,21 +352,40 @@ _times_fact:
 void fact(void)
 {
     switch(lookahead){
-    case ID:
-        match(ID);
-        if(lookahead==':'){
-            match(':');
-            match('=');
-            expression();
-        }
-        break;
-    case UINT:case UFLOAT:case STRCONST:case TRUE:case FALSE:case NIL:
-        match(lookahead);
-        break;
-    default:
+    case '(':
         match('(');
         expression();
         match(')');
+        break;
+    case NOT:
+        match(NOT);
+        fact();
+        break;
+    case '[':
+        match('[');
+expr_list:
+        expression();
+        if(lookahead == '.'){
+            match('.');
+            match('.');
+            expression();
+        }
+        if(lookahead == ','){
+            match(',');
+            goto expr_list;
+        }
+        match(']');
+    default:
+        if(isuconstant())
+            uconstant();
+        else{
+            variable();
+            if(lookahead == '('){
+                match('(');
+                expr_list();
+                match(')');
+            }
+        }
     }
 }
 
@@ -519,6 +562,9 @@ void repeatstmt(void)
 void forstmt(void)
 {
     match(FOR);
+    match(ID);
+    match(':');
+    match('=');
     expression();
     if(lookahead == TO)
         match(TO);

@@ -61,6 +61,9 @@ void            casestmt(void);
 void            variablelist(void);
 void            withstmt(void);
 void            gotostmt(void);
+int             isuconstant(void);
+void            uconstant(void);
+int             isconstant(void);
 
 #define MAXSTACKSIZE 0x100
 extern double   E_val[MAXSTACKSIZE];
