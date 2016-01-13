@@ -28,7 +28,7 @@ void            term(void);
 void            fact(void);
 void            match(int);
 void            mypas(void);
-void            stmt(void);
+int             stmt(void);
 void            stmtlist(void);
 void            proc_func(void);
 void            type(void);

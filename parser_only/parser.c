@@ -602,7 +602,7 @@ void variablelist(void)
 {
 variable_list:
     variable();
-    if (lookahead == ','){
+    if (lookahead == ',' ) {
         match(',');
         goto variable_list;
     }
@@ -622,13 +622,16 @@ void gotostmt(void)
     match(UINT);
 }
 
-void stmt(void)
+int stmt(void)
 {
-    if (lookahead == UINT){
+    if (lookahead == UINT) {
         match(UINT);
         match(':');
     }
-    switch(lookahead){
+
+    int foundStmt = 1;
+
+    switch (lookahead) {
     case BEGIN:
         beginstmt();
         break;
@@ -656,14 +659,17 @@ void stmt(void)
     case ID:
         idstmt();
         break;
+    default:
+        foundStmt = 0;
     }
+
+    return foundStmt;
 }
 
 void stmtlist(void)
 {
 stmt_list:
-    stmt();
-    if (lookahead == ';'){
+    if (stmt()) {
         match(';');
         goto stmt_list;
     }
@@ -680,12 +686,19 @@ void match(int predicted)
             lookahead = gettoken(tape);
         }
     } else {
-//        fprintf(stderr, "Token mismatch! Line %d Column %d\n", linecount + 1, linecursor[linecount] + 1 - lexcursor);
-        fprintf(stderr, "error:%d:%d: expected '%s' but was '%s'\n",
-                linecount + 1,
-                linecursor[linecount] + 1 - lexcursor,
-                predicted >= BEGIN ? keyword[predicted - BEGIN] : predicted,
-                lexeme);
+        if (predicted >= BEGIN) {
+            fprintf(stderr, "Error:%d:%d: expected '%s' but was '%s'\n",
+                    linecount + 1,
+                    linecursor[linecount] + 1 - lexcursor,
+                    keyword[predicted - BEGIN],
+                    lexeme);
+        } else {
+            fprintf(stderr, "Error:%d:%d: expected '%c' but was '%s'\n",
+                    linecount + 1,
+                    linecursor[linecount] + 1 - lexcursor,
+                    predicted,
+                    lexeme);
+        }
         exit(-1);
     }
 }
