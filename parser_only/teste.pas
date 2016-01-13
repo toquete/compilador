@@ -27,7 +27,7 @@ end;
 
 procedure proc2(var teste: integer; procedure novoteste(x: double));
 begin
-	while a < b do
+	while a < b do 
 	begin
 		xabale(asd, 123);
 		xablau;

@@ -10,6 +10,7 @@
 #include <tokens.h>
 #include <lexer.h>
 #include <keywords.h>
+#include <utils.h>
 
 /**
  * Top-down recursive parser emulating an EBNF for the simplified
@@ -537,7 +538,7 @@ void ifstmt(void)
     match(THEN);
     stmt();
 
-    if(lookahead==ELSE){
+    if (lookahead == ELSE) {
         match(ELSE);
         stmt();
     }
@@ -679,7 +680,12 @@ void match(int predicted)
             lookahead = gettoken(tape);
         }
     } else {
-        fprintf(stderr, "token mismatch... exiting\n");
+//        fprintf(stderr, "Token mismatch! Line %d Column %d\n", linecount + 1, linecursor[linecount] + 1 - lexcursor);
+        fprintf(stderr, "error:%d:%d: expected '%s' but was '%s'\n",
+                linecount + 1,
+                linecursor[linecount] + 1 - lexcursor,
+                predicted > BEGIN ? keyword[predicted - BEGIN] : predicted,
+                lexeme);
         exit(-1);
     }
 }
