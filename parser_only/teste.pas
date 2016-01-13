@@ -30,6 +30,7 @@ begin
 	while a < b do
 	begin
 		xabale(asd, 123);
+		xablau;
 	end;
 end;
 begin

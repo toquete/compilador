@@ -504,19 +504,19 @@ void mypas (void)
 void idstmt(void)
 {
     variable();
-    if(lookahead == '('){
+    if (lookahead == '(') {
         match('(');
 expr_id_list:
-        if(lookahead == ID)
+        if (lookahead == ID)
             match(ID);
         else
             expression();
-        if(lookahead == ','){
+        if (lookahead == ',') {
             match(',');
             goto expr_id_list;
         }
         match(')');
-    } else {
+    } else if (lookahead == ':') {
         match(':');
         match('=');
         expression();
@@ -566,10 +566,12 @@ void forstmt(void)
     match(':');
     match('=');
     expression();
-    if(lookahead == TO)
+
+    if (lookahead == TO)
         match(TO);
     else
         match(DOWNTO);
+
     expression();
     match(DO);
     stmt();
@@ -580,14 +582,14 @@ void casestmt(void)
     match(CASE);
     expression();
     match(OF);
-    if(lookahead == END)
+    if (lookahead == END) {
         match(END);
-    else{
+    }  else {
 case_list:
         constantlist();
         match(':');
         stmt();
-        if (lookahead == ';'){
+        if (lookahead == ';') {
             match(';');
             goto case_list;
         }
@@ -599,7 +601,7 @@ void variablelist(void)
 {
 variable_list:
     variable();
-    if(lookahead == ','){
+    if (lookahead == ','){
         match(',');
         goto variable_list;
     }
@@ -621,7 +623,7 @@ void gotostmt(void)
 
 void stmt(void)
 {
-    if(lookahead == UINT){
+    if (lookahead == UINT){
         match(UINT);
         match(':');
     }
