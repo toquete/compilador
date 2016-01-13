@@ -684,7 +684,7 @@ void match(int predicted)
         fprintf(stderr, "error:%d:%d: expected '%s' but was '%s'\n",
                 linecount + 1,
                 linecursor[linecount] + 1 - lexcursor,
-                predicted > BEGIN ? keyword[predicted - BEGIN] : predicted,
+                predicted >= BEGIN ? keyword[predicted - BEGIN] : predicted,
                 lexeme);
         exit(-1);
     }
