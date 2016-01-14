@@ -12,6 +12,8 @@
 #include <keywords.h>
 #include <utils.h>
 
+/**/ int label_counter = 1; /**/
+
 /**
  * Top-down recursive parser emulating an EBNF for the simplified
  * Pascal (MyPas):
@@ -31,31 +33,18 @@ ID_list:
     }
 }
 
-void constantlist(void)
-{
-constant_list:
-    constant();
-    if (lookahead == ','){
-        match(',');
-        goto constant_list;
-    }
-}
-
 void parmlist (void)
 {
     if (lookahead == '(') {
         match('(');
 _parm_spec:
-        if (lookahead == PROCEDURE || lookahead == FUNCTION)
-            proc_func();
-        else {
-            if(lookahead == VAR)
-                match(VAR);
-            idlist();
-            match(':');
-            typeidentifier();
-        }
-        if(lookahead==';'){
+        if (lookahead == VAR)
+            match(VAR);
+        idlist();
+        match(':');
+        type();
+
+        if (lookahead == ';'){
             match(';');
             goto _parm_spec;
         }
@@ -63,66 +52,9 @@ _parm_spec:
     }
 }
 
-int isconstant(void)
-{
-    switch(lookahead){
-    case '+': case '-': case ID: case UINT: case UFLOAT: case STRCONST:
-        return lookahead;
-    }
-
-    return 0;
-}
-
-void constant(void)
-{
-    if (lookahead == STRCONST)
-        match(STRCONST);
-    else {
-        if (lookahead == '+' || lookahead == '-')
-            match(lookahead);
-        switch(lookahead){
-        case ID:
-            match(ID);
-            break;
-        case UINT:
-            match(UINT);
-            break;
-        default:
-            match(UFLOAT);
-        }
-    }
-}
-
-void uconstant(void)
-{
-    switch(lookahead){
-    case UINT:
-        match(UINT);
-        break;
-    case UFLOAT:
-        match(UFLOAT);
-        break;
-    case NIL:
-        match(NIL);
-        break;
-    default:
-        match(STRCONST);
-    }
-}
-
-int isuconstant(void)
+void type(void)
 {
     switch (lookahead) {
-    case UINT: case UFLOAT: case NIL: case STRCONST:
-        return lookahead;
-    }
-
-    return 0;
-}
-
-void typeidentifier(void)
-{
-    switch(lookahead){
     case INTEGER:
         match(INTEGER);
         break;
@@ -132,81 +64,26 @@ void typeidentifier(void)
     case DOUBLE:
         match(DOUBLE);
         break;
-    case BOOLEAN:
-        match(BOOLEAN);
-        break;
     default:
-        match(STRING);
+        match(BOOLEAN);
     }
 }
 
-int istypeidentifier(void)
+int istype(void)
 {
-    switch(lookahead){
-    case INTEGER:case REAL:case DOUBLE:case BOOLEAN:case STRING:
+    switch (lookahead) {
+    case INTEGER:case REAL:case DOUBLE:case BOOLEAN:
         return lookahead;
     }
 
     return 0;
 }
 
-void simple_type(void)
-{
-    if (istypeidentifier())
-        typeidentifier();
-    else{
-        switch(lookahead){
-        case '(':
-            match('(');
-            idlist();
-            match(')');
-            break;
-        default:
-            constant();
-            match('.');
-            match('.');
-            constant();
-        }
-    }
-}
-
-void field_list(void)
-{
-field_list:
-    if(lookahead == ID){
-        idlist();
-        match(':');
-        type();
-        if(lookahead == ';'){
-            match(';');
-            goto field_list;
-        }
-    } else {
-        match(CASE);
-        if(lookahead == ID){
-            match(ID);
-            match(':');
-        }
-        typeidentifier();
-        match(OF);
-_CONST_list:
-        constantlist();
-        match(':');
-        match('(');
-        field_list();
-        match(')');
-        if(lookahead == ';'){
-            match(';');
-            goto _CONST_list;
-        }
-    }
-}
-
 void expr_list(void)
 {
 expr_list:
     expression();
-    if(lookahead == ','){
+    if (lookahead == ',') {
         match(',');
         goto expr_list;
     }
@@ -215,91 +92,24 @@ expr_list:
 void variable(void)
 {
     match(ID);
-variable_list:
-    switch (lookahead) {
-    case '[': case '.': case '^':
-        switch (lookahead) {
-        case '[':
-            match('[');
-            expr_list();
-            match(']');
-            break;
-        case '.':
-            match('.');
-            match(ID);
-            break;
-        default:
-            match('^');
-        }
-        goto variable_list;
-        break;
-    }
-}
-
-void range(void)
-{
-    match('[');
-_UINT_list:
-    simple_type();
-    if(lookahead==','){
-        match(',');
-        goto _UINT_list;
-    }
-    match(']');
-}
-
-void type (void)
-{
-    if(istypeidentifier() || isconstant() || lookahead == '(')
-        simple_type();
-    else if (lookahead == '^'){
-        match('^');
-        typeidentifier();
-    } else {
-        if (lookahead == PACKED)
-            match(PACKED);
-        switch (lookahead){
-        case SET:
-            match(SET);
-            match(OF);
-            simple_type();
-            break;
-        case ARRAY:
-            match(ARRAY);
-            range();
-            match(OF);
-            type();
-            break;
-        case RECORD:
-            match(RECORD);
-            field_list();
-            match(END);
-            break;
-        default:
-            match(pasFILE);
-            match(OF);
-            type();
-        }
-    }
 }
 
 int isrelop()
 {
-    switch(lookahead){
+    switch (lookahead) {
     case '>':
         match('>');
-        if(lookahead=='='){
+        if (lookahead == '=') {
             match('=');
             return GEQ;
         }
         return '>';
     case '<':
         match('<');
-        if(lookahead=='='){
+        if (lookahead == '=') {
             match('=');
             return LEQ;
-        }
-        else if(lookahead=='>'){
+        } else if (lookahead == '>') {
             match('>');
             return NEQ;
         }
@@ -307,9 +117,6 @@ int isrelop()
     case '=':
         match('=');
         return '=';
-    case IN:
-        match(IN);
-        return IN;
     }
 
     return 0;
@@ -343,7 +150,7 @@ void term(void)
 {
 _times_fact:
     fact();
-    switch(lookahead){
+    switch (lookahead) {
     case'*':case'/':case DIV:case MOD:case AND:
         match(lookahead);
         goto _times_fact;
@@ -352,7 +159,7 @@ _times_fact:
 
 void fact(void)
 {
-    switch(lookahead){
+    switch (lookahead) {
     case '(':
         match('(');
         expression();
@@ -362,73 +169,8 @@ void fact(void)
         match(NOT);
         fact();
         break;
-    case '[':
-        match('[');
-expr_list:
-        expression();
-        if(lookahead == '.'){
-            match('.');
-            match('.');
-            expression();
-        }
-        if(lookahead == ','){
-            match(',');
-            goto expr_list;
-        }
-        match(']');
     default:
-        if(isuconstant())
-            uconstant();
-        else{
-            variable();
-            if(lookahead == '('){
-                match('(');
-                expr_list();
-                match(')');
-            }
-        }
-    }
-}
-
-void label(void)
-{
-    if (lookahead == LABEL){
-        match(LABEL);
-UINT_list:
-        match(UINT);
-        if (lookahead == ','){
-            match(',');
-            goto UINT_list;
-        }
-        match(';');
-    }
-}
-
-void const_pas(void)
-{
-    if (lookahead == CONST){
-        match(CONST);
-const_list:
-        match(ID);
-        match('=');
-        constant();
-        match(';');
-        if (lookahead == ID)
-            goto const_list;
-    }
-}
-
-void type_pas(void)
-{
-    if (lookahead == TYPE){
-        match(TYPE);
-type_list:
-        match(ID);
-        match('=');
-        type();
-        match(';');
-        if (lookahead == ID)
-            goto type_list;
+        variable();
     }
 }
 
@@ -446,37 +188,9 @@ ID_list_2:
     }
 }
 
-void proc_func(void)
-{
-    switch (lookahead) {
-    case PROCEDURE:
-        match(PROCEDURE);
-        match(ID);
-        parmlist();
-        break;
-    case FUNCTION:
-        match(FUNCTION);
-        match(ID);
-        parmlist();
-        match(':');
-        typeidentifier();
-    }
-}
-
 void body (void)
 {
-    label();
-    const_pas();
-    type_pas();
     var();
-
-    while (lookahead == PROCEDURE || lookahead == FUNCTION){
-        proc_func();
-        match(';');
-        body();
-        match(';');
-    }
-
     beginstmt();
 }
 
@@ -537,12 +251,22 @@ void beginstmt(void)
 
 void ifstmt(void)
 {
+    /**/ int label_endif, label_else; /**/
+
     match(IF);
     expression();
+
+    /**/printf("\tjz .L%i\n", label_endif = label_else = label_counter);/**/
+    /**/label_counter++;/**/
+
     match(THEN);
     stmt();
 
     if (lookahead == ELSE) {
+        /**/printf("\tgoto .L%i\n", label_endif = label_counter);/**/
+        /**/label_counter++;/**/
+        /**/printf(".L%i:\n", label_else);/**/
+
         match(ELSE);
         stmt();
     }
@@ -550,56 +274,62 @@ void ifstmt(void)
 
 void whilestmt(void)
 {
+    /**/ int label_while, label_end_while; /**/
+
     match(WHILE);
+
+    /**/printf(".L%i:\n", label_while = label_counter);/**/
+    /**/label_counter++;/**/
+
     expression();
+
+    /**/printf("\tjz .L%i\n", label_end_while = label_counter);/**/
+    /**/label_counter++;/**/
+
     match(DO);
     stmt();
+
+    /**/printf("\tgoto .L%i\n", label_while);/**/
+    /**/printf(".L%i\n", label_end_while);/**/
 }
 
 void repeatstmt(void)
 {
+    /**/ int label_repeat; /**/
     match(REPEAT);
+
+    /**/printf(".L%i:\n", label_repeat = label_counter);/**/
+    /**/label_counter++;/**/
+
     stmtlist();
+
     match(UNTIL);
     expression();
+
+    /**/printf("\tjnz .L%i\n", label_repeat);/**/
 }
 
 void forstmt(void)
 {
+    /**/ int label_for, label_end_for; /**/
+
     match(FOR);
     match(ID);
     match(':');
     match('=');
     expression();
-
-    if (lookahead == TO)
-        match(TO);
-    else
-        match(DOWNTO);
-
+    match(TO);
     expression();
+
+    /**/printf(".L%i:\n", label_for = label_counter);/**/
+    /**/label_counter++;/**/
+    /**/printf("\tje .L%i\n", label_end_for);/**/
+
     match(DO);
     stmt();
-}
 
-void casestmt(void)
-{
-    match(CASE);
-    expression();
-    match(OF);
-    if (lookahead == END) {
-        match(END);
-    }  else {
-case_list:
-        constantlist();
-        match(':');
-        stmt();
-        if (lookahead == ';') {
-            match(';');
-            goto case_list;
-        }
-        match(END);
-    }
+    /**/printf("\tgoto .L%i\n", label_for);/**/
+    /**/printf(".L%i\n", label_end_for);/**/
 }
 
 void variablelist(void)
@@ -612,27 +342,8 @@ variable_list:
     }
 }
 
-void withstmt(void)
-{
-    match(WITH);
-    variablelist();
-    match(DO);
-    stmt();
-}
-
-void gotostmt(void)
-{
-    match(GOTO);
-    match(UINT);
-}
-
 int stmt(void)
 {
-    if (lookahead == UINT) {
-        match(UINT);
-        match(':');
-    }
-
     int foundStmt = 1;
 
     switch (lookahead) {
@@ -650,15 +361,6 @@ int stmt(void)
         break;
     case FOR:
         forstmt();
-        break;
-    case CASE:
-        casestmt();
-        break;
-    case WITH:
-        withstmt();
-        break;
-    case GOTO:
-        gotostmt();
         break;
     case ID:
         idstmt();
