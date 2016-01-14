@@ -1,45 +1,55 @@
-/**@<symtab.h>::**/
+/**@<symtab.c>::**/
 #include <string.h>
-
 #include <lexer.h>
 #include <symtab.h>
+#include <errorhandler.h>
 
-char            symtab[MAXTBENTRIES][MAXIDLEN + 1];
+char            symtab_names[MAXTBENTRIES * (MAXIDLEN + 1)];
+int             symtab_names_next_entry = 0;
+/** 
+ * symtab:
+ *          0         1
+      |id_position|datatype|
+**/
 
-double          memory[MAXTBENTRIES];
-
-int             symtab_next = 0;
+int             symtab_descriptor[MAXTBENTRIES][2];
+int             symtab_next_entry = 0;
 
 int
 symtab_lookup(char const *symbol)
 {
     int             i;
-    for (i = 0; i < symtab_next; i++) {
-        if (strcmp(symtab[i], symbol) == 0)
+    for (i = symtab_next_entry - 1; i > -1; i--) {
+        if (strcmp(symtab_names + symtab_descriptor[i][ID_POS], symbol)
+            == 0)
             return i;
     }
     return -1;
 }
 
-double
-retrieve(const char *varname)
+int
+symtab_append(const char *symbol)
 {
-    int             address;
-    if ((address = symtab_lookup(varname)) > -1) {
-        return memory[address];
+    int             j = symtab_next_entry;
+    int             entry = symtab_lookup(symbol);
+    if (entry == -1) {
+        strcpy(&symtab_names[symtab_names_next_entry], symbol);
+        symtab_descriptor[symtab_next_entry][ID_POS] =
+            symtab_names_next_entry;
+        symtab_names_next_entry += strlen(symbol) + 1;
+        symtab_next_entry++;
+    } else {
+        fatal_error(SYMB_OVRLP);
+        return -1;
     }
-    strcpy(symtab[symtab_next], varname);
-    symtab_next++;
-    return 0;
+    return j;
 }
 
 void
-store(const char *varname, double val)
+symtab_settype(int first, int last, int buitintype)
 {
-    int             address;
-    if ((address = symtab_lookup(varname)) < 0) {
-        strcpy(symtab[address = symtab_next], varname);
-        symtab_next++;
+    int             i;
+    for (i = first; i < last; i++) {
+        symtab_descriptor[i][DATYPE] = buitintype;
     }
-    memory[address] = val;
 }

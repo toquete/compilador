@@ -29,7 +29,6 @@ char *keyword[] = {
     "boolean",
     "true",
     "false",
-    "nil",
     "end"
 };
 

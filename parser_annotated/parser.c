@@ -89,11 +89,6 @@ expr_list:
     }
 }
 
-void variable(void)
-{
-    match(ID);
-}
-
 int isrelop()
 {
     switch (lookahead) {
@@ -169,8 +164,11 @@ void fact(void)
         match(NOT);
         fact();
         break;
+    case UINT: case UFLOAT: case NIL:
+        match(lookahead);
+        break;
     default:
-        variable();
+        match(ID);
     }
 }
 
@@ -222,7 +220,8 @@ void mypas (void)
 */
 void idstmt(void)
 {
-    variable();
+    match(ID);
+
     if (lookahead == '(') {
         match('(');
 expr_id_list:
@@ -335,7 +334,8 @@ void forstmt(void)
 void variablelist(void)
 {
 variable_list:
-    variable();
+    match(ID);
+
     if (lookahead == ',' ) {
         match(',');
         goto variable_list;

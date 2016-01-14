@@ -1,8 +1,12 @@
 /**@<symtab.h>::**/
+#include <lexer.h>
 #define MAXTBENTRIES 0x1000
-char            symtab[MAXTBENTRIES][MAXIDLEN + 1];
-double          memory[MAXTBENTRIES];
-extern int      symtab_next;
+enum {
+    ID_POS = 0,
+    DATYPE,
+};
+extern int      symtab_descriptor[MAXTBENTRIES][2];
+extern int      symtab_next_entry;
 int             symtab_lookup(char const *symbol);
-double          retrieve(const char *varname);
-void            store(const char *varname, double val);
+int             symtab_append(char const *symbol);
+void            symtab_settype(int, int, int);

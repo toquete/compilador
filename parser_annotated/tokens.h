@@ -9,7 +9,6 @@ enum {
     ID,
     UINT,
     UFLOAT,
-    STRCONST,
     GEQ,
     LEQ,
     NEQ,

@@ -166,23 +166,6 @@ end_is_NUM:
     return numtype;
 }
 
-int
-is_STRING(FILE * tape)
-{
-    int lookahead = _getc(tape);
-    if (lookahead == '\'') {
-        while((lookahead = _getc(tape)) != '\'') {
-            if (lookahead == EOF)
-                return EOF;
-        }
-
-        return STRCONST;
-    }
-
-    _ungetc(lookahead, tape);
-    return 0;
-}
-
 /*
  * visible module is gettokent below: 
  */
@@ -199,9 +182,6 @@ gettoken(FILE * tape)
         return token;
 
     if ((token = is_NUM(tape)))
-        return token;
-
-    if ((token = is_STRING(tape)))
         return token;
 
     return token = _getc(tape);

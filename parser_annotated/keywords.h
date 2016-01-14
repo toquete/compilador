@@ -28,6 +28,5 @@ enum {
     BOOLEAN,
     TRUE,
     FALSE,
-    NIL,
     END
 };
