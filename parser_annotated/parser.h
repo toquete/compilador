@@ -31,7 +31,7 @@ void            mypas(void);
 int             stmt(void);
 void            stmtlist(void);
 void            proc_func(void);
-void            type(void);
+int            type(void);
 void            simple_type(void);
 void            typeidentifier(void);
 void            idlist (void);

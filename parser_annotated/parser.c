@@ -11,6 +11,9 @@
 #include <lexer.h>
 #include <keywords.h>
 #include <utils.h>
+#include <symtab.h>
+#include <errorhandler.h>
+
 
 /**/ int label_counter = 1; /**/
 
@@ -21,12 +24,17 @@
  * mypas -> PROGRAM ID ; body .
  *
  * body -> { VAR ID { , ID } : type ; { ID { , ID } : type ; } }
- *       | { PROCEDURE ID parmlist ; body ; | FUNCTION ID parmlist : type ; body ; }
  */
 void idlist (void)
 {
+    /**/int initial, final /**/;
+
 ID_list:
+
+    /**/initial = symtab_next_entry/**/;
+    /**/final = symtab_append(lexeme)/**/;
     match(ID);
+
     if (lookahead == ',') {
         match (',');
         goto ID_list;
@@ -40,9 +48,11 @@ void parmlist (void)
 _parm_spec:
         if (lookahead == VAR)
             match(VAR);
+
+        /**/int initial = symtab_next_entry/**/;
         idlist();
         match(':');
-        type();
+        /**/symtab_settype(initial, symtab_next_entry, type())/**/;
 
         if (lookahead == ';'){
             match(';');
@@ -52,20 +62,32 @@ _parm_spec:
     }
 }
 
-void type(void)
+/*
+ * type return:
+ * 0 -> INT
+ * 1 -> REAL
+ * 2 -> DOUBLE
+ * 3 -> BOOLEAN
+ */
+
+int type(void)
 {
     switch (lookahead) {
     case INTEGER:
         match(INTEGER);
+        /**/return 0/**/;
         break;
     case REAL:
         match(REAL);
+        /**/return 1/**/;
         break;
     case DOUBLE:
         match(DOUBLE);
+        /**/return 2/**/;
         break;
     default:
         match(BOOLEAN);
+        /**/return 3/**/;
     }
 }
 
@@ -154,6 +176,7 @@ _times_fact:
 
 void fact(void)
 {
+    int teste;
     switch (lookahead) {
     case '(':
         match('(');
@@ -164,22 +187,27 @@ void fact(void)
         match(NOT);
         fact();
         break;
-    case UINT: case UFLOAT: case NIL:
+    case UINT: case UFLOAT:
         match(lookahead);
         break;
     default:
+        printf("lexeme: "); puts(lexeme);
+        /**/if((teste = symtab_lookup(lexeme)) == -1)
+            fatal_error(SYMB_NFND)/**/;
         match(ID);
     }
 }
 
 void var(void)
 {
+    /**/int initial/**/;
     while (lookahead == VAR) {
         match (VAR);
 ID_list_2:
+        /**/initial = symtab_next_entry/**/;
         idlist();
         match(':');
-        type();
+        /**/symtab_settype(initial, symtab_next_entry, type())/**/;
         match(';');
         if (lookahead == ID)
             goto ID_list_2;
@@ -206,6 +234,15 @@ void mypas (void)
     match(';');
     body();
     match('.');
+    //puts(symtab_names);
+
+    int i,j;
+    for(i = 0; i < symtab_next_entry; i++){
+        for(j = 0; j < 2; j++){
+            printf("%i   ",symtab_descriptor[i][j]);
+        }
+        printf("\n");
+    }
 }
 
 /**
@@ -220,15 +257,21 @@ void mypas (void)
 */
 void idstmt(void)
 {
+    /**/if(symtab_lookup(lexeme) == -1)
+        fatal_error(SYMB_NFND)/**/;
+
     match(ID);
 
     if (lookahead == '(') {
         match('(');
 expr_id_list:
-        if (lookahead == ID)
+        if (lookahead == ID){
+            /**/if(symtab_lookup(lexeme) == -1)
+                fatal_error(SYMB_NFND);/**/
             match(ID);
-        else
+        } else {
             expression();
+        }
         if (lookahead == ',') {
             match(',');
             goto expr_id_list;
@@ -314,6 +357,8 @@ void forstmt(void)
 
     match(FOR);
     match(ID);
+    /**/if(symtab_lookup(lexeme) == -1)
+        fatal_error(SYMB_NFND)/**/;
     match(':');
     match('=');
     expression();
@@ -334,6 +379,10 @@ void forstmt(void)
 void variablelist(void)
 {
 variable_list:
+
+    /**/if(symtab_lookup(lexeme) == -1)
+        fatal_error(SYMB_NFND)/**/;
+
     match(ID);
 
     if (lookahead == ',' ) {

@@ -1,6 +1,9 @@
 program teste (input, output);
 var
-	x: double;
+	x,cesar: double;
+	guizao, web: integer;
+	teste, test1: boolean;
+	ab,cd: real;
 begin
 	if x <= 1123.23 then
 	begin

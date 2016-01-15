@@ -15,14 +15,24 @@ int             symtab_names_next_entry = 0;
 int             symtab_descriptor[MAXTBENTRIES][2];
 int             symtab_next_entry = 0;
 
+
 int
 symtab_lookup(char const *symbol)
 {
-    int             i;
+
+    int             i;//,j, strSize
+    //char *strSplitted;
     for (i = symtab_next_entry - 1; i > -1; i--) {
+        //strSize = strSize - symtab_descriptor[i][ID_POS] ;
+        //for(j = 0; j < strSize; j++)
+            //strSplitted[j] = getc(symtab_names + symtab_descriptor[i][ID_POS] + j);
+        //printf("symbol: "); puts(symbol);
+        //printf("str %i: ",i);puts(symtab_names + symtab_descriptor[i][ID_POS]);
         if (strcmp(symtab_names + symtab_descriptor[i][ID_POS], symbol)
             == 0)
+        //if (strcmp(strSplitted, symbol)== 0)
             return i;
+        //strSize = symtab_descriptor[i][ID_POS];
     }
     return -1;
 }
@@ -36,7 +46,7 @@ symtab_append(const char *symbol)
         strcpy(&symtab_names[symtab_names_next_entry], symbol);
         symtab_descriptor[symtab_next_entry][ID_POS] =
             symtab_names_next_entry;
-        symtab_names_next_entry += strlen(symbol) + 1;
+        symtab_names_next_entry += strlen(symbol);
         symtab_next_entry++;
     } else {
         fatal_error(SYMB_OVRLP);
