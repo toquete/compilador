@@ -22,8 +22,7 @@ symtab_lookup(char const *symbol)
 
     int             i;
     for (i = symtab_next_entry - 1; i > -1; i--) {
-        if (strcmp(symtab_names + symtab_descriptor[i][ID_POS], symbol)
-            == 0)
+        if (strcmp(symtab_names + symtab_descriptor[i][ID_POS], symbol) == 0)
             return i;
     }
     return -1;
