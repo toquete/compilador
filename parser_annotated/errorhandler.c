@@ -5,6 +5,8 @@
 #include <typecheck.h>
 #include <errorhandler.h>
 
+int error = 0;
+
 void
 gettypename(char *typestring, int type) {
     switch (type) {
@@ -54,6 +56,8 @@ fatal_error(int errorcode)
             linecount + 1,
             linecursor[linecount] + 1 - lexcursor,
             errMsg);
+
+    error = 1;
 }
 
 void
@@ -70,4 +74,6 @@ type_fatal_error(int errorcode, int expectedtype, int gottype)
             linecursor[linecount] + 1 - lexcursor,
             expected,
             errorcode);
+
+    error = 1;
 }
