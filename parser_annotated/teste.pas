@@ -5,7 +5,7 @@ var
 	teste, test1: boolean;
 	ab,cd: real;
 begin
-	if x <= 1123.23 then
+	if rr <= 1123.23 then
 	begin
 		x := 24;
 	end
