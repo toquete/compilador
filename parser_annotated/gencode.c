@@ -1,13 +1,51 @@
 /**@<gencode.h>::**/
 
 #include <stdio.h>
+#include <stdarg.h>
 #include <gencode.h>
 #include <typecheck.h>
 #include <symtab.h>
+#include <errorhandler.h>
+
+/*void readln()
+{
+
+
+}
+
+void read()
+{
+
+
+}
+
+void write(char *str)
+{
+    write("string");
+    fprintf(ascode, str);
+}
+
+void writeln()
+{
+
+}*/
+
+void genprint(const char* s, ...)
+{
+    if (error)
+        return;
+
+    va_list arg;
+    va_start (arg, s);
+
+    fprintf(ascode, s, arg);
+
+    va_end(arg);
+}
 
 void gensecdata()
 {
-    fprintf(ascode,"\t.data\n");
+    genprint("\t.data\n");
 }
 
 void genvar(int initial, int final, int typevar)
@@ -27,12 +65,8 @@ void genvar(int initial, int final, int typevar)
         sprintf(sizebyte,"dq");
     }
 
-    for (i = initial; i < final; i++) {
-        printf("%-*s\t%s", MAXIDLEN, &(symtab_names[symtab_descriptor[i][0]]),sizebyte);
-        fprintf(ascode,"%-*s\t%s\n", MAXIDLEN, &(symtab_names[symtab_descriptor[i][0]]),sizebyte);
-    }
+    for (i = initial; i < final; i++)
+        fprintf(ascode,"%-*s:\t%s\n", MAXIDLEN, &(symtab_names[symtab_descriptor[i][0]]),sizebyte);
 
-    //fprintf(ascode, "%s:\t%s\n",varName,sizebyte);
 }
-
 
