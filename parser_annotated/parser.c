@@ -148,14 +148,14 @@ int expression(int inheritedtype)
     impltype = expr();
     if (isrelop()) {
         if (typecheck(impltype, expr()) == -1) {
-            fatal_error(INVL_TYPE);
+            fatal_error(IVLD_OPDS);
         } else {
             impltype = BOOLEAN_TYPE;
         }
     }
 
     if (typecheck(inheritedtype, impltype))
-        fatal_error(INVL_TYPE);
+        fatal_error(IVLD_OPDS);
 
     return impltype;
 }
@@ -175,7 +175,7 @@ _plus_term:
     synthtype = term(impltype);
 
     if (impltype > synthtype) {
-        fatal_error(INVL_TYPE);
+        fatal_error(IVLD_OPDS);
     }
 
     impltype = synthtype;
@@ -183,10 +183,10 @@ _plus_term:
     switch (lookahead) {
     case '+': case '-':
         if (impltype < NUMBER_TYPE)
-            fatal_error(INVL_TYPE);
+            fatal_error(IVLD_OPDS);
     case OR:
         if (impltype != BOOLEAN_TYPE)
-            fatal_error(INVL_TYPE);
+            fatal_error(IVLD_OPDS);
         match(lookahead);
         goto _plus_term;
     }
@@ -202,13 +202,13 @@ _times_fact:
     switch (lookahead) {
     case '*': case '/':
         if (impltype < NUMBER_TYPE)
-            fatal_error(INVL_TYPE);
+            fatal_error(IVLD_OPDS);
     case DIV: case MOD:
         if (impltype != INTEGER_TYPE)
-            fatal_error(INVL_TYPE);
+            fatal_error(IVLD_OPDS);
     case AND:
         if (impltype != BOOLEAN_TYPE)
-            fatal_error(INVL_TYPE);
+            fatal_error(IVLD_OPDS);
         match(lookahead);
         goto _times_fact;
     }
@@ -233,7 +233,7 @@ int fact(void)
 
         /**/impltype = fact();/**/
         /**/if (impltype != BOOLEAN_TYPE) {
-            fatal_error(INVL_TYPE);
+            fatal_error(IVLD_OPDS);
         }/**/
 
         break;
@@ -341,22 +341,6 @@ void idstmt(void)
 
     match(ID);
 
-//    if (lookahead == '(') {
-//        match('(');
-//expr_id_list:
-//        if (lookahead == ID){
-//            /**/if(symtab_lookup(lexeme) == -1)
-//                fatal_error(SYMB_NFND);/**/
-//            match(ID);
-//        } else {
-//            expression(NONE);
-//        }
-//        if (lookahead == ',') {
-//            match(',');
-//            goto expr_id_list;
-//        }
-//        match(')');
-//    } else
     if (lookahead == ':') {
         match(':');
         match('=');
@@ -443,11 +427,11 @@ void forstmt(void)
     match('=');
 
     if (expression(NONE) != INTEGER_TYPE)
-        fatal_error(INVL_TYPE);
+        fatal_error(IVLD_OPDS);
 
     match(TO);
     if (expression(NONE) != INTEGER_TYPE)
-        fatal_error(INVL_TYPE);
+        fatal_error(IVLD_OPDS);
 
     /**/printf(".L%i:\n", label_for = label_counter);/**/
     /**/label_counter++;/**/
