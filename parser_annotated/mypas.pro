@@ -4,11 +4,9 @@ CONFIG -= app_bundle
 CONFIG -= qt
 QT += widgets
 
-SOURCES += *.c *.h \
-    gencode.c
+SOURCES += *.c
 
 include(deployment.pri)
 qtcAddDeployment()
 
-HEADERS += \
-    gencode.h
+HEADERS += *.h
