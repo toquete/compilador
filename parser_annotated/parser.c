@@ -387,16 +387,16 @@ void ifstmt(void)
     match(IF);
     expression(BOOLEAN_TYPE);
 
-    /**/printf("\tjz .L%i\n", label_endif = label_else = label_counter);/**/
+    /**/genprint("\tjz .L%i\n", label_endif = label_else = label_counter);/**/
     /**/label_counter++;/**/
 
     match(THEN);
     stmt();
 
     if (lookahead == ELSE) {
-        /**/printf("\tgoto .L%i\n", label_endif = label_counter);/**/
+        /**/genprint("\tgoto .L%i\n", label_endif = label_counter);/**/
         /**/label_counter++;/**/
-        /**/printf(".L%i:\n", label_else);/**/
+        /**/genprint(".L%i:\n", label_else);/**/
 
         match(ELSE);
         stmt();
@@ -409,19 +409,19 @@ void whilestmt(void)
 
     match(WHILE);
 
-    /**/printf(".L%i:\n", label_while = label_counter);/**/
+    /**/genprint(".L%i:\n", label_while = label_counter);/**/
     /**/label_counter++;/**/
 
     expression(BOOLEAN_TYPE);
 
-    /**/printf("\tjz .L%i\n", label_end_while = label_counter);/**/
+    /**/genprint("\tjz .L%i\n", label_end_while = label_counter);/**/
     /**/label_counter++;/**/
 
     match(DO);
     stmt();
 
-    /**/printf("\tgoto .L%i\n", label_while);/**/
-    /**/printf(".L%i\n", label_end_while);/**/
+    /**/genprint("\tgoto .L%i\n", label_while);/**/
+    /**/genprint(".L%i\n", label_end_while);/**/
 }
 
 void repeatstmt(void)
@@ -429,7 +429,7 @@ void repeatstmt(void)
     /**/ int label_repeat; /**/
     match(REPEAT);
 
-    /**/printf(".L%i:\n", label_repeat = label_counter);/**/
+    /**/genprint(".L%i:\n", label_repeat = label_counter);/**/
     /**/label_counter++;/**/
 
     stmtlist();
@@ -437,7 +437,7 @@ void repeatstmt(void)
     match(UNTIL);
     expression(/**/BOOLEAN_TYPE/**/);
 
-    /**/printf("\tjnz .L%i\n", label_repeat);/**/
+    /**/printf(ascode, "\tjnz .L%i\n", label_repeat);/**/
 }
 
 void forstmt(void)
@@ -471,15 +471,15 @@ void forstmt(void)
     if (synthtype != INTEGER_TYPE)
         type_fatal_error(IVLD_OPDS, INTEGER_TYPE, expression(NONE));
 
-    /**/printf(".L%i:\n", label_for = label_counter);/**/
+    /**/genprint(".L%i:\n", label_for = label_counter);/**/
     /**/label_counter++;/**/
-    /**/printf("\tje .L%i\n", label_end_for);/**/
+    /**/genprint("\tje .L%i\n", label_end_for);/**/
 
     match(DO);
     stmt();
 
-    /**/printf("\tgoto .L%i\n", label_for);/**/
-    /**/printf(".L%i\n", label_end_for);/**/
+    /**/genprint("\tgoto .L%i\n", label_for);/**/
+    /**/genprint(".L%i\n", label_end_for);/**/
 }
 
 void variablelist(void)

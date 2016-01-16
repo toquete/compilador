@@ -1,7 +1,9 @@
 /**@<gencode.h>::**/
 
 #include <stdio.h>
+#include <stdarg.h>
 #include <gencode.h>
+#include <errorhandler.h>
 
 /*void readln()
 {
@@ -26,12 +28,27 @@ void writeln()
 
 }*/
 
-void gensecdata()
+void genprint(const char* s, ...)
 {
-    fprintf(ascode,"\t.data\n");
+    if (error)
+        return;
+
+    va_list arg;
+    va_start (arg, s);
+
+    fprintf(ascode, s, arg);
+
+    va_end(arg);
 }
 
-void genvar(char *varName)
+void gensecdata()
 {
-    fprintf(ascode, "%s:\tdb\n",varName);
+    genprint("\t.data\n");
 }
+
+void genvar(char *varname)
+{
+    genprint("%s:\tdb\n", varname);
+}
+
+
