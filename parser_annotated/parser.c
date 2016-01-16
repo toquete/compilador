@@ -141,82 +141,82 @@ int isrelop(void)
     return 0;
 }
 
-int expression(int inheritedtype)
+int expression(/**/int inheritedtype/**/)
 {
-    int impltype;
+    /**/int impltype;
     int impltypeAux;
 
-    impltype = expr();
-    if (isrelop()) {
+    impltype = expr()/**/;
+    /**/if (isrelop()) {
         impltypeAux = expr();
         if (typecheck(impltype, impltypeAux) == -1) {
             type_fatal_error(IVLD_OPDS, impltype, impltypeAux);
         }
         impltype = BOOLEAN_TYPE;
-    }
+    }/**/
 
-    if (typecheck(inheritedtype, impltype) == -1)
-        type_fatal_error(IVLD_OPDS, inheritedtype, impltype);
+    /**/if (typecheck(inheritedtype, impltype) == -1)
+        type_fatal_error(IVLD_OPDS, inheritedtype, impltype)/**/;
 
-    return impltype;
+    /**/return impltype;/**/
 }
 
 int expr(void)
 {
-    int impltype = NONE;
+    /**/int impltype = NONE;/**/
 
     switch (lookahead) {
     case '+': case '-':
-        impltype = NUMBER_TYPE;
+        /**/impltype = NUMBER_TYPE;/**/
         match(lookahead);
     }
 
-    int synthtype;
+    /**/int synthtype;/**/
 _plus_term:
-    synthtype = term(impltype);
+    /**/synthtype = term(impltype);/**/
 
-    if (impltype > synthtype) {
+    /**/if (impltype > synthtype) {
         type_fatal_error(IVLD_OPDS, impltype, synthtype);
     }
 
-    impltype = synthtype;
+    impltype = synthtype;/**/
 
     switch (lookahead) {
-    case '+': case '-':
+    /**/case '+': case '-':
         if (impltype < NUMBER_TYPE)
             type_fatal_error(IVLD_OPDS, NUMBER_TYPE, impltype);
     case OR:
         if (impltype != BOOLEAN_TYPE)
-            type_fatal_error(IVLD_OPDS, BOOLEAN_TYPE, impltype);
+            type_fatal_error(IVLD_OPDS, BOOLEAN_TYPE, impltype);/**/
         match(lookahead);
         goto _plus_term;
     }
 
-    return impltype;
+    /**/return impltype;/**/
 }
 
 
-int term(int inheritedtype)
+int term(/**/int inheritedtype/**/)
 {
-    int impltype;
+    /**/int impltype;/**/
 
 _times_fact:
-    impltype = typecheck(inheritedtype, fact());
+    /**/impltype = typecheck(inheritedtype, fact());/**/
     switch (lookahead) {
     case '*': case '/':
-        if (impltype < NUMBER_TYPE)
-            type_fatal_error(IVLD_OPDS, NUMBER_TYPE, impltype);
+        /**/if (impltype < NUMBER_TYPE)
+            type_fatal_error(IVLD_OPDS, NUMBER_TYPE, impltype);/**/
     case DIV: case MOD:
-        if (impltype != INTEGER_TYPE)
-            type_fatal_error(IVLD_OPDS, INTEGER_TYPE, impltype);
+        /**/if (impltype != INTEGER_TYPE)
+            type_fatal_error(IVLD_OPDS, INTEGER_TYPE, impltype);/**/
     case AND:
-        if (impltype != BOOLEAN_TYPE)
-            type_fatal_error(IVLD_OPDS, BOOLEAN_TYPE, impltype);
+        /**/if (impltype != BOOLEAN_TYPE)
+            type_fatal_error(IVLD_OPDS, BOOLEAN_TYPE, impltype);/**/
         match(lookahead);
         goto _times_fact;
     }
 
-    return impltype;
+    /**/return impltype;/**/
 }
 
 int fact(void)
@@ -272,7 +272,7 @@ int fact(void)
         match(ID);
     }
 
-    return impltype;
+    /**/return impltype;/**/
 }
 
 void var(void)
@@ -354,10 +354,10 @@ void idstmt(void)
         match(':');
         match('=');
 
-        int synthtype;
-        synthtype = expression(NONE);
+        /**/int synthtype;
+        synthtype = expression(NONE);/**/
 
-        switch (impltype) {
+        /**/switch (impltype) {
         case BOOLEAN_TYPE:
             if (synthtype != BOOLEAN_TYPE)
                 type_fatal_error(IVLD_OPDS, BOOLEAN_TYPE, synthtype);
@@ -368,7 +368,7 @@ void idstmt(void)
             if (impltype < synthtype || synthtype == BOOLEAN_TYPE)
                 type_fatal_error(IVLD_OPDS, impltype, synthtype);
             break;
-        }
+        }/**/
     }
 }
 
@@ -434,7 +434,7 @@ void repeatstmt(void)
     stmtlist();
 
     match(UNTIL);
-    expression(BOOLEAN_TYPE);
+    expression(/**/BOOLEAN_TYPE/**/);
 
     /**/printf("\tjnz .L%i\n", label_repeat);/**/
 }
@@ -458,7 +458,7 @@ void forstmt(void)
     match(':');
     match('=');
 
-    int synthtype = expression(NONE);
+    /**/int synthtype = expression(NONE);
 
     if (synthtype != INTEGER_TYPE)
         type_fatal_error(IVLD_OPDS, INTEGER_TYPE, expression(NONE));
