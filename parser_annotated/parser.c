@@ -14,7 +14,7 @@
 #include <symtab.h>
 #include <errorhandler.h>
 #include <typecheck.h>
-
+#include <gencode.h>
 
 /**/ int label_counter = 1; /**/
 
@@ -34,6 +34,7 @@ ID_list:
 
     /**/initial = symtab_next_entry/**/;
     /**/final = symtab_append(lexeme)/**/;
+    /**/genvar(lexeme)/**/;
     match(ID);
 
     if (lookahead == ',') {

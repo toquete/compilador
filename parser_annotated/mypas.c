@@ -7,6 +7,7 @@
 
 #include <mypas.h>
 #include <parser.h>
+#include <gencode.h>
 
 FILE           *tape;
 FILE           *ascode;
@@ -21,6 +22,7 @@ int main(int argc, char *argv[])
         }
 
         ascode = fopen(argv[2], "w");
+        gensecdata();
     } else {
         tape = fopen("../teste.pas", "r");
         if (tape == NULL) {
