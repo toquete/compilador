@@ -64,7 +64,7 @@ void genvar(int initial, int final, int typevar)
     }
 
     for (i = initial; i < final; i++)
-        fprintf(ascode,"%-*s:\t%s\n", MAXIDLEN, &(symtab_names[symtab_descriptor[i][0]]),sizebyte);
+        genprint("%-*s: %s\n", MAXIDLEN, &(symtab_names[symtab_descriptor[i][0]]), sizebyte);
 
 }
 

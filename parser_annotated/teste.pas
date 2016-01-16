@@ -3,7 +3,7 @@ var
 	x,cesar: double;
 	guizao, web: integer;
 	teste, test1: boolean;
-	ab,cd: real;
+	ab,cd,var: real;
 begin
 	ab := 654;
 	x := 14.3;
