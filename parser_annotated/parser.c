@@ -352,7 +352,22 @@ void idstmt(void)
     if (lookahead == ':') {
         match(':');
         match('=');
-        expression(impltype);
+
+        int synthtype;
+        synthtype = expression(NONE);
+
+        switch (impltype) {
+        case BOOLEAN_TYPE:
+            if (synthtype != BOOLEAN_TYPE)
+                fatal_error(IVLD_OPDS);
+            break;
+        case -1:
+            break;
+        default:
+            if (impltype < synthtype || synthtype == BOOLEAN_TYPE)
+                fatal_error(IVLD_OPDS);
+            break;
+        }
     }
 }
 

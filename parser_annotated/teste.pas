@@ -6,6 +6,12 @@ var
 	ab,cd: real;
 begin
 	x := 14.3;
+	ab := 12.121111212212;
+	ab := 14.34;
+	ab := 123;
+	ab := x;
+	ab := true;
+
 	if x <= 1123.23 then
 	begin
 		x := 24;
@@ -13,7 +19,7 @@ begin
 	end
 	else
 		cesar := 23.12;
-	for guizao := 3. to 7 do
+	for web := 3 to 7 do
 	begin
 	end;
 end.
