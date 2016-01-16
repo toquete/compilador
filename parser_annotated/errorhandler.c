@@ -14,7 +14,7 @@ void errorsDictionary(char *err, int errorcode)
         sprintf(err, "variable is not declared (error %i)", errorcode);
         break;
     case SYMB_OVRFL:
-        sprintf(err, "variable overflow (error %i)", errorcode);
+        sprintf(err, "symbol table overflow (error %i)", errorcode);
         break;
     case IVLD_OPDS:
         sprintf(err, "invalid type of operands (error %i)", errorcode);
