@@ -23,15 +23,15 @@ int             gettoken(FILE * tape);
  * parser modules
  */
 
-void            expr(void);
-void            term(void);
-void            fact(void);
+int             expr(void);
+int             term(int);
+int             fact(void);
 void            match(int);
 void            mypas(void);
 int             stmt(void);
 void            stmtlist(void);
 void            proc_func(void);
-int            type(void);
+int             type(void);
 void            simple_type(void);
 void            typeidentifier(void);
 void            idlist (void);
@@ -42,7 +42,7 @@ int             istypeidentifier(void);
 void            fieldlist(void);
 void            range(void);
 int             isrelop(void);
-void            expression (void);
+int             expression(int);
 void            label(void);
 void            const_pas(void);
 void            type_pas(void);

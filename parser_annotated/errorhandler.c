@@ -1,21 +1,23 @@
 /**@<errorhandler.c>::**/
 #include <stdio.h>
+#include <lexer.h>
+#include <utils.h>
 #include <errorhandler.h>
 
 void errorsDictionary(char *err, int errorcode)
 {
     switch(errorcode){
     case SYMB_OVRLP:
-        sprintf(err,"FATAL ERROR %i: redeclaration of variable\n", errorcode);
+        sprintf(err, "redeclaration of variable (error %i)\n", errorcode);
         break;
     case SYMB_NFND:
-        sprintf(err,"FATAL ERROR %i: variable is not declared\n", errorcode);
+        sprintf(err, "variable is not declared (error %i)\n", errorcode);
         break;
     case SYMB_OVRFL:
-        sprintf(err,"FATAL ERROR %i: variable overflow\n", errorcode);
+        sprintf(err, "variable overflow (error %i)\n", errorcode);
         break;
     case IVLD_OPDS:
-        sprintf(err,"FATAL ERROR %i: Invalid type of operands\n", errorcode);
+        sprintf(err, "invalid type of operands (error %i)\n", errorcode);
         break;
     }
 }
@@ -25,5 +27,9 @@ fatal_error(int errorcode)
 {
     char errMsg[100];
     errorsDictionary(errMsg,errorcode);
-    fprintf(stderr, errMsg);
+
+    fprintf(stderr, "Fatal error:%d:%d: %s\n:",
+            linecount + 1,
+            linecursor[linecount] + 1 - lexcursor,
+            errMsg);
 }

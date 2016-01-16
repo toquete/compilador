@@ -13,6 +13,7 @@
 #include <utils.h>
 #include <symtab.h>
 #include <errorhandler.h>
+#include <typecheck.h>
 
 
 /**/ int label_counter = 1; /**/
@@ -64,10 +65,11 @@ _parm_spec:
 
 /*
  * type return:
- * 0 -> INT
- * 1 -> REAL
- * 2 -> DOUBLE
- * 3 -> BOOLEAN
+ * 0 -> BOOLEAN
+ * 1 -> NUMBER (INTEGER + REAL + DOUBLE)
+ * 2 -> INTEGER
+ * 3 -> REAL
+ * 4 -> DOUBLE
  */
 
 int type(void)
@@ -75,19 +77,19 @@ int type(void)
     switch (lookahead) {
     case INTEGER:
         match(INTEGER);
-        /**/return 0/**/;
+        /**/return INTEGER_TYPE/**/;
         break;
     case REAL:
         match(REAL);
-        /**/return 1/**/;
+        /**/return REAL_TYPE/**/;
         break;
     case DOUBLE:
         match(DOUBLE);
-        /**/return 2/**/;
+        /**/return DOUBLE_TYPE/**/;
         break;
     default:
         match(BOOLEAN);
-        /**/return 3/**/;
+        /**/return BOOLEAN_TYPE/**/;
     }
 }
 
@@ -104,14 +106,14 @@ int istype(void)
 void expr_list(void)
 {
 expr_list:
-    expression();
+    expression(NONE);
     if (lookahead == ',') {
         match(',');
         goto expr_list;
     }
 }
 
-int isrelop()
+int isrelop(void)
 {
     switch (lookahead) {
     case '>':
@@ -139,63 +141,129 @@ int isrelop()
     return 0;
 }
 
-void expression (void)
+int expression(int inheritedtype)
 {
-    expr();
+    int impltype;
+
+    impltype = expr();
     if (isrelop()) {
-        expr();
+        if (typecheck(impltype, expr()) == -1) {
+            fatal_error(INVL_TYPE);
+        } else {
+            impltype = BOOLEAN_TYPE;
+        }
     }
+
+    if (typecheck(inheritedtype, impltype))
+        fatal_error(INVL_TYPE);
+
+    return impltype;
 }
 
-void expr(void)
+int expr(void)
 {
+    int impltype = NONE;
+
     switch (lookahead) {
     case '+': case '-':
+        impltype = NUMBER_TYPE;
         match(lookahead);
     }
+
+    int synthtype;
 _plus_term:
-    term();
+    synthtype = term(impltype);
+
+    if (impltype > synthtype) {
+        fatal_error(INVL_TYPE);
+    }
+
+    impltype = synthtype;
+
     switch (lookahead) {
-    case '+': case '-': case OR:
+    case '+': case '-':
+        if (impltype < NUMBER_TYPE)
+            fatal_error(INVL_TYPE);
+    case OR:
+        if (impltype != BOOLEAN_TYPE)
+            fatal_error(INVL_TYPE);
         match(lookahead);
         goto _plus_term;
     }
 }
 
 
-void term(void)
+int term(int inheritedtype)
 {
+    int impltype;
+
 _times_fact:
-    fact();
+    impltype = typecheck(inheritedtype, fact());
     switch (lookahead) {
-    case'*':case'/':case DIV:case MOD:case AND:
+    case '*': case '/':
+        if (impltype < NUMBER_TYPE)
+            fatal_error(INVL_TYPE);
+    case DIV: case MOD:
+        if (impltype != INTEGER_TYPE)
+            fatal_error(INVL_TYPE);
+    case AND:
+        if (impltype != BOOLEAN_TYPE)
+            fatal_error(INVL_TYPE);
         match(lookahead);
         goto _times_fact;
     }
+
+    return impltype;
 }
 
-void fact(void)
+int fact(void)
 {
-    int teste;
+    /**/int impltype;/**/
+
+    int sym_index;
+
     switch (lookahead) {
     case '(':
         match('(');
-        expression();
+        impltype = expression(NONE);
         match(')');
         break;
     case NOT:
         match(NOT);
-        fact();
+
+        /**/impltype = fact();/**/
+        /**/if (impltype != BOOLEAN_TYPE) {
+            fatal_error(INVL_TYPE);
+        }/**/
+
         break;
-    case UINT: case UFLOAT:
+    case UINT:
+        impltype = INTEGER_TYPE;
+    case UFLOAT:
+        impltype = REAL_TYPE;
+    case UDOUBLE:
+        impltype = DOUBLE_TYPE;
+        match(lookahead);
+        break;
+    case TRUE:
+    case FALSE:
+        impltype = BOOLEAN_TYPE;
         match(lookahead);
         break;
     default:
-        printf("lexeme: "); puts(lexeme);
-        /**/if((teste = symtab_lookup(lexeme)) == -1)
-            fatal_error(SYMB_NFND)/**/;
+        sym_index = symtab_lookup(lexeme);
+
+        /**/if (sym_index == -1) {
+            fatal_error(SYMB_NFND);
+            impltype = -1;/**/
+        } else {
+            impltype = symtab_descriptor[sym_index][DATYPE];
+        }
+
         match(ID);
     }
+
+    return impltype;
 }
 
 void var(void)
@@ -261,30 +329,38 @@ void mypas (void)
 */
 void idstmt(void)
 {
-    /**/if(symtab_lookup(lexeme) == -1)
-        fatal_error(SYMB_NFND)/**/;
+    /**/int impltype;/**/
+    int sym_index = symtab_lookup(lexeme);
+
+    /**/if (sym_index == -1) {
+        fatal_error(SYMB_NFND);
+        impltype = -1;
+    } else {
+        symtab_descriptor[sym_index][DATYPE];
+    }/**/
 
     match(ID);
 
-    if (lookahead == '(') {
-        match('(');
-expr_id_list:
-        if (lookahead == ID){
-            /**/if(symtab_lookup(lexeme) == -1)
-                fatal_error(SYMB_NFND);/**/
-            match(ID);
-        } else {
-            expression();
-        }
-        if (lookahead == ',') {
-            match(',');
-            goto expr_id_list;
-        }
-        match(')');
-    } else if (lookahead == ':') {
+//    if (lookahead == '(') {
+//        match('(');
+//expr_id_list:
+//        if (lookahead == ID){
+//            /**/if(symtab_lookup(lexeme) == -1)
+//                fatal_error(SYMB_NFND);/**/
+//            match(ID);
+//        } else {
+//            expression(NONE);
+//        }
+//        if (lookahead == ',') {
+//            match(',');
+//            goto expr_id_list;
+//        }
+//        match(')');
+//    } else
+    if (lookahead == ':') {
         match(':');
         match('=');
-        expression();
+        expression(impltype);
     }
 }
 
@@ -300,7 +376,7 @@ void ifstmt(void)
     /**/ int label_endif, label_else; /**/
 
     match(IF);
-    expression();
+    expression(BOOLEAN_TYPE);
 
     /**/printf("\tjz .L%i\n", label_endif = label_else = label_counter);/**/
     /**/label_counter++;/**/
@@ -327,7 +403,7 @@ void whilestmt(void)
     /**/printf(".L%i:\n", label_while = label_counter);/**/
     /**/label_counter++;/**/
 
-    expression();
+    expression(BOOLEAN_TYPE);
 
     /**/printf("\tjz .L%i\n", label_end_while = label_counter);/**/
     /**/label_counter++;/**/
@@ -350,7 +426,7 @@ void repeatstmt(void)
     stmtlist();
 
     match(UNTIL);
-    expression();
+    expression(BOOLEAN_TYPE);
 
     /**/printf("\tjnz .L%i\n", label_repeat);/**/
 }
@@ -361,13 +437,17 @@ void forstmt(void)
 
     match(FOR);
     match(ID);
-    /**/if(symtab_lookup(lexeme) == -1)
+    /**/if (symtab_lookup(lexeme) == -1)
         fatal_error(SYMB_NFND)/**/;
     match(':');
     match('=');
-    expression();
+
+    if (expression(NONE) != INTEGER_TYPE)
+        fatal_error(INVL_TYPE);
+
     match(TO);
-    expression();
+    if (expression(NONE) != INTEGER_TYPE)
+        fatal_error(INVL_TYPE);
 
     /**/printf(".L%i:\n", label_for = label_counter);/**/
     /**/label_counter++;/**/
@@ -384,7 +464,7 @@ void variablelist(void)
 {
 variable_list:
 
-    /**/if(symtab_lookup(lexeme) == -1)
+    /**/if (symtab_lookup(lexeme) == -1)
         fatal_error(SYMB_NFND)/**/;
 
     match(ID);

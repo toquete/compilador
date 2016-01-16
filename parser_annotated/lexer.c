@@ -163,6 +163,10 @@ is_NUM(FILE * tape)
 end_is_NUM:
     _ungetc(lexeme[lexcursor], tape);
     lexeme[lexcursor] = 0;
+
+    if (numtype == UFLOAT && lexcursor > 8)
+        return UDOUBLE;
+
     return numtype;
 }
 
