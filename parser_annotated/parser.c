@@ -144,18 +144,19 @@ int isrelop(void)
 int expression(int inheritedtype)
 {
     int impltype;
+    int impltypeAux;
 
     impltype = expr();
     if (isrelop()) {
-        if (typecheck(impltype, expr()) == -1) {
-            fatal_error(IVLD_OPDS);
-        } else {
-            impltype = BOOLEAN_TYPE;
+        impltypeAux = expr();
+        if (typecheck(impltype, impltypeAux) == -1) {
+            type_fatal_error(IVLD_OPDS, impltype, impltypeAux);
         }
+        impltype = BOOLEAN_TYPE;
     }
 
     if (typecheck(inheritedtype, impltype) == -1)
-        fatal_error(IVLD_OPDS);
+        type_fatal_error(IVLD_OPDS, inheritedtype, impltype);
 
     return impltype;
 }
@@ -175,7 +176,7 @@ _plus_term:
     synthtype = term(impltype);
 
     if (impltype > synthtype) {
-        fatal_error(IVLD_OPDS);
+        type_fatal_error(IVLD_OPDS, impltype, synthtype);
     }
 
     impltype = synthtype;
@@ -183,10 +184,10 @@ _plus_term:
     switch (lookahead) {
     case '+': case '-':
         if (impltype < NUMBER_TYPE)
-            fatal_error(IVLD_OPDS);
+            type_fatal_error(IVLD_OPDS, NUMBER_TYPE, impltype);
     case OR:
         if (impltype != BOOLEAN_TYPE)
-            fatal_error(IVLD_OPDS);
+            type_fatal_error(IVLD_OPDS, BOOLEAN_TYPE, impltype);
         match(lookahead);
         goto _plus_term;
     }
@@ -204,13 +205,13 @@ _times_fact:
     switch (lookahead) {
     case '*': case '/':
         if (impltype < NUMBER_TYPE)
-            fatal_error(IVLD_OPDS);
+            type_fatal_error(IVLD_OPDS, NUMBER_TYPE, impltype);
     case DIV: case MOD:
         if (impltype != INTEGER_TYPE)
-            fatal_error(IVLD_OPDS);
+            type_fatal_error(IVLD_OPDS, INTEGER_TYPE, impltype);
     case AND:
         if (impltype != BOOLEAN_TYPE)
-            fatal_error(IVLD_OPDS);
+            type_fatal_error(IVLD_OPDS, BOOLEAN_TYPE, impltype);
         match(lookahead);
         goto _times_fact;
     }
@@ -235,7 +236,7 @@ int fact(void)
 
         /**/impltype = fact();/**/
         /**/if (impltype != BOOLEAN_TYPE) {
-            fatal_error(IVLD_OPDS);
+            type_fatal_error(IVLD_OPDS, BOOLEAN_TYPE, impltype);
         }/**/
 
         break;
@@ -359,13 +360,13 @@ void idstmt(void)
         switch (impltype) {
         case BOOLEAN_TYPE:
             if (synthtype != BOOLEAN_TYPE)
-                fatal_error(IVLD_OPDS);
+                type_fatal_error(IVLD_OPDS, BOOLEAN_TYPE, synthtype);
             break;
         case -1:
             break;
         default:
             if (impltype < synthtype || synthtype == BOOLEAN_TYPE)
-                fatal_error(IVLD_OPDS);
+                type_fatal_error(IVLD_OPDS, impltype, synthtype);
             break;
         }
     }
@@ -450,20 +451,24 @@ void forstmt(void)
         fatal_error(SYMB_NFND);
     } else {
         if (symtab_descriptor[sym_index][DATYPE] != INTEGER_TYPE)
-            fatal_error(IVLD_OPDS);
+            type_fatal_error(IVLD_OPDS, INTEGER_TYPE, symtab_descriptor[sym_index][DATYPE]);
     }/**/
 
     match(ID);
     match(':');
     match('=');
 
-    if (expression(NONE) != INTEGER_TYPE)
-        fatal_error(IVLD_OPDS);
+    int synthtype = expression(NONE);
+
+    if (synthtype != INTEGER_TYPE)
+        type_fatal_error(IVLD_OPDS, INTEGER_TYPE, expression(NONE));
 
     match(TO);
 
-    if (expression(NONE) != INTEGER_TYPE)
-        fatal_error(IVLD_OPDS);
+    synthtype = expression(NONE);
+
+    if (synthtype != INTEGER_TYPE)
+        type_fatal_error(IVLD_OPDS, INTEGER_TYPE, expression(NONE));
 
     /**/printf(".L%i:\n", label_for = label_counter);/**/
     /**/label_counter++;/**/
@@ -542,18 +547,18 @@ void match(int predicted)
         }
     } else {
         if (predicted >= BEGIN) {
-            fprintf(stderr, "Error:%d:%d: expected '%s' but was '%s'\n",
+            fprintf(stderr, "Syntax error:%d:%d: expected '%s' but was '%s'\n",
                     linecount + 1,
                     linecursor[linecount] + 1 - lexcursor,
                     keyword[predicted - BEGIN],
                     lexeme);
         } else if (!predicted) {
-            fprintf(stderr, "Error:%d:%d: '%s' not expected\n",
+            fprintf(stderr, "Syntax error:%d:%d: '%s' not expected\n",
                     linecount + 1,
                     linecursor[linecount] + 1 - lexcursor,
                     lexeme);
         } else  {
-            fprintf(stderr, "Error:%d:%d: expected '%c' but was '%s'\n",
+            fprintf(stderr, "Syntax error:%d:%d: expected '%c' but was '%s'\n",
                     linecount + 1,
                     linecursor[linecount] + 1 - lexcursor,
                     predicted,

@@ -13,7 +13,11 @@ typecheck(int impltype, int currtype)
         return impltype;
     }
 
-    if (impltype == BOOLEAN_TYPE && currtype != impltype) {
+    if (impltype == NONE) {
+        return currtype;
+    }
+
+    if ((impltype == BOOLEAN_TYPE || currtype == BOOLEAN_TYPE) && currtype != impltype) {
         return -1;
     }
 
