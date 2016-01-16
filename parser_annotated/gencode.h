@@ -5,4 +5,4 @@
 extern FILE           *ascode;
 
 void gensecdata();
-void genvar(char*);
+void genvar(int, int, int);
