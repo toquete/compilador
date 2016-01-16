@@ -13,7 +13,7 @@ begin
 	end
 	else
 		cesar := 23.12;
-	for guizao := 3 to 7 do
+	for guizao := 3. to 7 do
 	begin
 	end;
 end.

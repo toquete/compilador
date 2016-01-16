@@ -154,7 +154,7 @@ int expression(int inheritedtype)
         }
     }
 
-    if (typecheck(inheritedtype, impltype))
+    if (typecheck(inheritedtype, impltype) == -1)
         fatal_error(IVLD_OPDS);
 
     return impltype;
@@ -190,6 +190,8 @@ _plus_term:
         match(lookahead);
         goto _plus_term;
     }
+
+    return impltype;
 }
 
 
@@ -237,12 +239,18 @@ int fact(void)
         }/**/
 
         break;
-    case UINT:
-        impltype = INTEGER_TYPE;
-    case UFLOAT:
-        impltype = REAL_TYPE;
-    case UDOUBLE:
-        impltype = DOUBLE_TYPE;
+    case UINT: case UFLOAT: case UDOUBLE:
+        switch (lookahead) {
+        case UINT:
+            impltype = INTEGER_TYPE;
+            break;
+        case UFLOAT:
+            impltype = REAL_TYPE;
+            break;
+        case UDOUBLE:
+            impltype = DOUBLE_TYPE;
+            break;
+        }
         match(lookahead);
         break;
     case TRUE:
@@ -336,7 +344,7 @@ void idstmt(void)
         fatal_error(SYMB_NFND);
         impltype = -1;
     } else {
-        symtab_descriptor[sym_index][DATYPE];
+        impltype = symtab_descriptor[sym_index][DATYPE];
     }/**/
 
     match(ID);
@@ -420,9 +428,17 @@ void forstmt(void)
     /**/ int label_for, label_end_for; /**/
 
     match(FOR);
+
+    int sym_index;
+
+    /**/if ((sym_index = symtab_lookup(lexeme)) == -1) {
+        fatal_error(SYMB_NFND);
+    } else {
+        if (symtab_descriptor[sym_index][DATYPE] != INTEGER_TYPE)
+            fatal_error(IVLD_OPDS);
+    }/**/
+
     match(ID);
-    /**/if (symtab_lookup(lexeme) == -1)
-        fatal_error(SYMB_NFND)/**/;
     match(':');
     match('=');
 
@@ -430,6 +446,7 @@ void forstmt(void)
         fatal_error(IVLD_OPDS);
 
     match(TO);
+
     if (expression(NONE) != INTEGER_TYPE)
         fatal_error(IVLD_OPDS);
 

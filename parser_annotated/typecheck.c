@@ -8,11 +8,12 @@
 int
 typecheck(int impltype, int currtype)
 {
-    if (impltype < BOOLEAN_TYPE || impltype == currtype) {
+
+    if (impltype < NONE || impltype == currtype) {
         return impltype;
     }
 
-    if (impltype == BOOLEAN_TYPE) {
+    if (impltype == BOOLEAN_TYPE && currtype != impltype) {
         return -1;
     }
 
