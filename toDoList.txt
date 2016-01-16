@@ -1,0 +1,6 @@
+- checar palavra reservada no declarativo;
+- gerar pseudocode em arquivo separado(parar de gerar codigo em caso de erro);
+- testar exaustivamente parser_only
+- testar check type
+- testar Invalid Operands, redeclaracao de variavel, variavel not found, testar overflow na tabela de simbolos
+-  

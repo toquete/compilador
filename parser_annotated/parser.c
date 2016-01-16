@@ -223,12 +223,12 @@ int fact(void)
 {
     /**/int impltype;/**/
 
-    int sym_index;
+    /**/int sym_index;/**/
 
     switch (lookahead) {
     case '(':
         match('(');
-        impltype = expression(NONE);
+        /**/impltype = expression(NONE);/**/
         match(')');
         break;
     case NOT:
@@ -243,31 +243,31 @@ int fact(void)
     case UINT: case UFLOAT: case UDOUBLE:
         switch (lookahead) {
         case UINT:
-            impltype = INTEGER_TYPE;
+            /**/impltype = INTEGER_TYPE;/**/
             break;
         case UFLOAT:
-            impltype = REAL_TYPE;
+            /**/impltype = REAL_TYPE;/**/
             break;
         case UDOUBLE:
-            impltype = DOUBLE_TYPE;
+            /**/impltype = DOUBLE_TYPE;/**/
             break;
         }
         match(lookahead);
         break;
     case TRUE:
     case FALSE:
-        impltype = BOOLEAN_TYPE;
+        /**/impltype = BOOLEAN_TYPE;/**/
         match(lookahead);
         break;
     default:
-        sym_index = symtab_lookup(lexeme);
+        /**/sym_index = symtab_lookup(lexeme);/**/
 
         /**/if (sym_index == -1) {
             fatal_error(SYMB_NFND);
-            impltype = -1;/**/
+            impltype = -1;
         } else {
             impltype = symtab_descriptor[sym_index][DATYPE];
-        }
+        }/**/
 
         match(ID);
     }
@@ -445,7 +445,7 @@ void forstmt(void)
 
     match(FOR);
 
-    int sym_index;
+    /**/int sym_index;/**/
 
     /**/if ((sym_index = symtab_lookup(lexeme)) == -1) {
         fatal_error(SYMB_NFND);
