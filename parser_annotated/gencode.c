@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <gencode.h>
+#include <typecheck.h>
+#include <symtab.h>
 #include <errorhandler.h>
 
 /*void readln()
@@ -44,9 +46,25 @@ void gensecdata()
     genprint("\t.data\n");
 }
 
-void genvar(char *varname)
+void genvar(int initial, int final, int typevar)
 {
-    genprint("%s:\tdb\n", varname);
-}
+    int i;
+    char sizebyte[5];
 
+    switch(typevar){
+    case INTEGER_TYPE:
+    case REAL_TYPE:
+        sprintf(sizebyte,"dd");
+        break;
+    case BOOLEAN_TYPE:
+        sprintf(sizebyte,"db");
+        break;
+    default:
+        sprintf(sizebyte,"dq");
+    }
+
+    for (i = initial; i < final; i++)
+        fprintf(ascode,"%-*s:\t%s\n", MAXIDLEN, &(symtab_names[symtab_descriptor[i][0]]),sizebyte);
+
+}
 

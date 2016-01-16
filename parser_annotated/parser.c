@@ -34,7 +34,6 @@ ID_list:
 
     /**/initial = symtab_next_entry/**/;
     /**/final = symtab_append(lexeme)/**/;
-    /**/genvar(lexeme)/**/;
     match(ID);
 
     if (lookahead == ',') {
@@ -45,6 +44,8 @@ ID_list:
 
 void parmlist (void)
 {
+    int typevar;
+
     if (lookahead == '(') {
         match('(');
 _parm_spec:
@@ -54,7 +55,8 @@ _parm_spec:
         /**/int initial = symtab_next_entry/**/;
         idlist();
         match(':');
-        /**/symtab_settype(initial, symtab_next_entry, type())/**/;
+        typevar = type();
+        /**/symtab_settype(initial, symtab_next_entry, typevar)/**/;
 
         if (lookahead == ';'){
             match(';');
@@ -278,6 +280,7 @@ int fact(void)
 
 void var(void)
 {
+    int typevar;
     /**/int initial/**/;
     while (lookahead == VAR) {
         match (VAR);
@@ -285,7 +288,10 @@ ID_list_2:
         /**/initial = symtab_next_entry/**/;
         idlist();
         match(':');
-        /**/symtab_settype(initial, symtab_next_entry, type())/**/;
+        typevar = type();
+        /**/symtab_settype(initial, symtab_next_entry, typevar)/**/;
+        /**/genvar(initial, symtab_next_entry, typevar)/**/;
+
         match(';');
         if (lookahead == ID)
             goto ID_list_2;

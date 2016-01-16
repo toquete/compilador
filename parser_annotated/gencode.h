@@ -6,4 +6,4 @@ extern FILE           *ascode;
 
 void genprint(const char *, ...);
 void gensecdata();
-void genvar(char*);
+void genvar(int, int, int);
