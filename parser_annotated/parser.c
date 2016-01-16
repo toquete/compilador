@@ -349,11 +349,16 @@ void idstmt(void)
         impltype = symtab_descriptor[sym_index][DATYPE];
     }/**/
 
+    /**/char id_label[100]/**/;
+    /**/strcpy(id_label, lexeme);/**/
+
     match(ID);
 
     if (lookahead == ':') {
         match(':');
         match('=');
+
+        genprint("\tmov %s, %s\n", id_label, lexeme);
 
         /**/int synthtype;
         synthtype = expression(NONE);/**/
@@ -437,7 +442,7 @@ void repeatstmt(void)
     match(UNTIL);
     expression(/**/BOOLEAN_TYPE/**/);
 
-    /**/printf(ascode, "\tjnz .L%i\n", label_repeat);/**/
+    /**/genprint("\tjnz .L%i\n", label_repeat);/**/
 }
 
 void forstmt(void)

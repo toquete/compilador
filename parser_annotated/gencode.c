@@ -28,17 +28,15 @@ void writeln()
 
 }*/
 
-void genprint(const char* s, ...)
+void genprint(const char *format, ...)
 {
     if (error)
         return;
 
-    va_list arg;
-    va_start (arg, s);
-
-    fprintf(ascode, s, arg);
-
-    va_end(arg);
+    va_list args;
+    va_start(args, format);
+    vfprintf(stdout, format, args);
+    va_end(args);
 }
 
 void gensecdata()
