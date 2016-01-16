@@ -6,6 +6,7 @@ enum {
     IVLD_OPDS,/** conflit types of operands**/
 };
 
+int error;
 
 void fatal_error(int);
 void type_fatal_error(int, int, int);
