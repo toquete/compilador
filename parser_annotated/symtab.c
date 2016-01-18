@@ -33,6 +33,10 @@ symtab_append(const char *symbol)
 {
     int             j = symtab_next_entry;
     int             entry = symtab_lookup(symbol);
+    if(symtab_names_next_entry + 30 >= (MAXTBENTRIES * (MAXIDLEN + 1))){
+        fatal_error(SYMB_OVRFL);
+        return -1;
+    }
     if (entry == -1) {
         strcpy(&symtab_names[symtab_names_next_entry], symbol);
         symtab_descriptor[symtab_next_entry][ID_POS] =
