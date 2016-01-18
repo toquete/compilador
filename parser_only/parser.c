@@ -690,19 +690,19 @@ void match(int predicted)
             lookahead = gettoken(tape);
         }
     } else {
-        if (predicted >= BEGIN) {
-            fprintf(stderr, "Error:%d:%d: expected '%s' but was '%s'\n",
+        if (predicted >= BEGIN && keyword[predicted - BEGIN]) {
+            fprintf(stderr, "Syntax error:%d:%d: expected '%s' but was '%s'\n",
                     linecount + 1,
                     linecursor[linecount] + 1 - lexcursor,
                     keyword[predicted - BEGIN],
                     lexeme);
-        } else if (!predicted) {
-            fprintf(stderr, "Error:%d:%d: '%s' not expected\n",
+        } else if (!predicted || !keyword[predicted - BEGIN]) {
+            fprintf(stderr, "Syntax error:%d:%d: '%s' not expected\n",
                     linecount + 1,
                     linecursor[linecount] + 1 - lexcursor,
                     lexeme);
-        } else  {
-            fprintf(stderr, "Error:%d:%d: expected '%c' but was '%s'\n",
+        } else {
+            fprintf(stderr, "Syntax error:%d:%d: expected '%c' but was '%s'\n",
                     linecount + 1,
                     linecursor[linecount] + 1 - lexcursor,
                     predicted,
