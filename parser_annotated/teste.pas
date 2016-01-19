@@ -8,6 +8,8 @@ begin
 	ab := 654;
 	x := 14.30e100;
 	write(x+ab);
+	writeln(x+ab);
+	test1 := teste and true or false;
 	if x = 14 + 7 then
 		web := 3 + 4 * 7
 	else

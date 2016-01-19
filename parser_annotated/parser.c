@@ -581,7 +581,7 @@ variable_list:
 
 void writestmt(void)
 {
-    match(WRITE);
+    match(lookahead);
     match('(');
     /**/expr_list();/**/
     /**/genprint("\tmov $0, %rax\n");/**/
@@ -591,7 +591,7 @@ void writestmt(void)
 
 void readstmt(void)
 {
-    match(READ);
+    match(lookahead);
     match('(');
     /**/expr_list();/**/
     /**/genprint("\tmov $0, %rax\n");/**/
@@ -602,10 +602,10 @@ void readstmt(void)
 void iostmt()
 {
     switch (lookahead) {
-    case WRITE:
+    case WRITE: case WRITELN:
         writestmt();
         break;
-    case READ:
+    case READ: case READLN:
         readstmt();
         break;
     default:
