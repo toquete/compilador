@@ -55,7 +55,7 @@ _parm_spec:
         /**/int initial = symtab_next_entry/**/;
         idlist();
         match(':');
-        typevar = type();
+        /**/typevar = type()/**/;
         /**/symtab_settype(initial, symtab_next_entry, typevar)/**/;
 
         if (lookahead == ';'){
@@ -100,10 +100,10 @@ int istype(void)
 {
     switch (lookahead) {
     case INTEGER:case REAL:case DOUBLE:case BOOLEAN:
-        return lookahead;
+        /**/return lookahead;/**/
     }
 
-    return 0;
+    /**/return 0;/**/
 }
 
 void expr_list(void)
@@ -116,53 +116,53 @@ expr_list:
     }
 }
 
-char relop[4];
+/**/char relop[4];/**/
 
 int isrelop(void)
 {
     switch (lookahead) {
     case '>':
         match('>');
-        sprintf(relop, "jle");
+        /**/sprintf(relop, "jle");/**/
         if (lookahead == '=') {
             match('=');
-            sprintf(relop, "jl");
-            return GEQ;
+            /**/sprintf(relop, "jl");
+            return GEQ;/**/
         }
         return '>';
     case '<':
         match('<');
-        sprintf(relop, "jge");
+        /**/sprintf(relop, "jge");/**/
         if (lookahead == '=') {
             match('=');
-            sprintf(relop, "jg");
-            return LEQ;
+            /**/sprintf(relop, "jg");/**/
+            /**/return LEQ;/**/
         } else if (lookahead == '>') {
             match('>');
-            sprintf(relop, "je");
-            return NEQ;
+            /**/sprintf(relop, "je");/**/
+            /**/return NEQ;/**/
         }
-        return '<';
+        /**/return '<';/**/
     case '=':
         match('=');
-        sprintf(relop, "jne");
-        return '=';
+        /**/sprintf(relop, "jne");/**/
+        /**/return '=';/**/
     }
 
-    return 0;
+    /**/return 0;/**/
 }
 
-int initexpr = 0;
-int exprrelop = 0;
+/**/int initexpr = 0;/**/
+/**/int exprrelop = 0;/**/
 
 int expression(/**/int inheritedtype/**/)
 {
     /**/int impltype;
-    int impltypeAux;
+    int impltypeAux;/**/
 
-    impltype = expr()/**/;
+    /**/impltype = expr()/**/;
 
-    if (isrelop()) {
+    /**/if (isrelop()) {
         exprrelop = 1;
         impltypeAux = expr();
         if (typecheck(impltype, impltypeAux) == -1) {
@@ -171,7 +171,7 @@ int expression(/**/int inheritedtype/**/)
         impltype = BOOLEAN_TYPE;
 
         genprint("\tcmp _acc, _acc2\n");
-    }
+    }/**/
 
     /**/if (typecheck(inheritedtype, impltype) == -1)
         type_fatal_error(IVLD_OPDS, inheritedtype, impltype)/**/;
@@ -181,7 +181,7 @@ int expression(/**/int inheritedtype/**/)
 
 int expr(void)
 {
-    initexpr = 0;
+    /**/initexpr = 0;/**/
     /**/int impltype = NONE;/**/
 
     switch (lookahead) {
@@ -210,7 +210,7 @@ _plus_term:
             /**/genprint("\t%s ", lookahead == '+' ? "add" : "sub");/**/
             break;
         case OR:
-            if (impltype != BOOLEAN_TYPE)
+            /**/if (impltype != BOOLEAN_TYPE)/**/
                 /**/type_fatal_error(IVLD_OPDS, BOOLEAN_TYPE, impltype);/**/
 
             /**/genprint("\t%s ", lexeme);/**/
@@ -308,12 +308,12 @@ int fact(void)
     case FALSE:
         /**/impltype = BOOLEAN_TYPE;/**/
 
-        if (!initexpr) {
+        /**/if (!initexpr) {
             /**/genprint("\tmov %s, _acc%c\n", lexeme, exprrelop ? '2' : ' ');/**/
             initexpr = 1;
         } else {
             /**/genprint("%s, _acc%c\n", lexeme, exprrelop ? '2' : ' ');/**/
-        }
+        }/**/
 
         match(lookahead);
         break;
@@ -327,12 +327,12 @@ int fact(void)
             impltype = symtab_descriptor[sym_index][DATYPE];
         }/**/
 
-        if (!initexpr) {
+        /**/if (!initexpr) {
             /**/genprint("\tmov %s, _acc%c\n", lexeme, exprrelop ? '2' : ' ');/**/
             initexpr = 1;
         } else {
             /**/genprint("%s, _acc%c\n", lexeme, exprrelop ? '2' : ' ');/**/
-        }
+        }/**/
 
         match(ID);
     }
@@ -344,7 +344,7 @@ void var(void)
 {
     /**/gensecdata()/**/;
 
-    int typevar;
+    /**/int typevar;/**/
     /**/int initial/**/;
     while (lookahead == VAR) {
         match (VAR);
@@ -421,7 +421,7 @@ void idstmt(void)
         /**/int synthtype;
         synthtype = expression(NONE);/**/
 
-        genprint("\tmov _acc, %s\n", id_label);
+        /**/genprint("\tmov _acc, %s\n", id_label);/**/
 
         /**/switch (impltype) {
         case BOOLEAN_TYPE:
@@ -479,7 +479,7 @@ void whilestmt(void)
     /**/genprint(".L%i:\n", label_while = label_counter);/**/
     /**/label_counter++;/**/
 
-    expression(BOOLEAN_TYPE);
+    /**/expression(BOOLEAN_TYPE);/**/
 
     /**/genprint("\t%s .L%i\n", relop, label_end_while = label_counter);/**/
     /**/label_counter++;/**/
@@ -528,15 +528,15 @@ void forstmt(void)
 
     /**/int synthtype = expression(NONE);
 
-    if (synthtype != INTEGER_TYPE)
-        type_fatal_error(IVLD_OPDS, INTEGER_TYPE, expression(NONE));
+    /**/if (synthtype != INTEGER_TYPE)
+        type_fatal_error(IVLD_OPDS, INTEGER_TYPE, expression(NONE));/**/
 
     match(TO);
 
-    synthtype = expression(NONE);
+    /**/synthtype = expression(NONE);/**/
 
-    if (synthtype != INTEGER_TYPE)
-        type_fatal_error(IVLD_OPDS, INTEGER_TYPE, expression(NONE));
+    /**/if (synthtype != INTEGER_TYPE)
+        type_fatal_error(IVLD_OPDS, INTEGER_TYPE, expression(NONE));/**/
 
     /**/genprint(".L%i:\n", label_for = label_counter);/**/
     /**/label_counter++;/**/
@@ -595,14 +595,12 @@ void iostmt()
     case READ: case READLN:
         readstmt();
         break;
-    default:
-        break;
     }
 }
 
 int stmt(void)
 {
-    int foundStmt = 1;
+    /**/int foundStmt = 1;/**/
 
     switch (lookahead) {
     case BEGIN:
@@ -630,17 +628,17 @@ int stmt(void)
         iostmt();
         break;
     default:
-        foundStmt = 0;
+        /**/foundStmt = 0;/**/
     }
 
-    return foundStmt;
+    /**/return foundStmt;/**/
 }
 
 void stmtlist(void)
 {
 stmt_list:
-    if (stmt() && lookahead == ';') {
-        match(';');
+    /**/if (stmt() && lookahead == ';') {
+        match(';');/**/
         goto stmt_list;
     }
 }
