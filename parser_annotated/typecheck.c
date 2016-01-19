@@ -3,9 +3,15 @@
 #include <typecheck.h>
 #include <errorhandler.h>
 
-/*
- * COMENTAR SOBRE OS VALORES DOS TIPOS NO ENUM
-*/
+/**
+ * Validacao de tipos dos operandos
+ *
+ * 0 -> BOOLEAN
+ * 1 -> NUMBER (INTEGER + REAL + DOUBLE)
+ * 2 -> INTEGER
+ * 3 -> REAL
+ * 4 -> DOUBLE
+ */
 
 int
 typecheck(int impltype, int currtype)

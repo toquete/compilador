@@ -55,6 +55,7 @@ void closedestfile() {
 void
 fatal_error(int errorcode)
 {
+    /*Secao de tratamento dos erros de semantica*/
     char errMsg[100];
     errorsDictionary(errMsg, errorcode);
 
@@ -71,6 +72,7 @@ fatal_error(int errorcode)
 void
 type_fatal_error(int errorcode, int expectedtype, int gottype)
 {
+    /*Secao de tratamento dos erros relacionados aos tipos dos operandos*/
     char errMsg[100];
     errorsDictionary(errMsg, errorcode);
 

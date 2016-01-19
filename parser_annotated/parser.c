@@ -123,6 +123,7 @@ expr_list:
     }
 }
 
+/*Guarda a instrucao assembly relacionada ao tipo da comparacao*/
 /**/char relop[4];/**/
 
 int isrelop(void)
@@ -159,6 +160,8 @@ int isrelop(void)
     /**/return 0;/**/
 }
 
+
+/*Flags utilizadas na geracao de codigo das expressoes*/
 /**/int initexpr = 0;/**/
 /**/int exprrelop = 0;/**/
 
@@ -681,6 +684,7 @@ void match(int predicted)
             lookahead = gettoken(tape);
         }
     } else {
+        /*Secao de tratamento de erros sintaticos*/
         if (predicted >= BEGIN && keyword[predicted - BEGIN]) {
             fprintf(stderr, "Syntax error:%d:%d: expected '%s' but was '%s'\n",
                     linecount + 1,

@@ -7,6 +7,9 @@
 #include <symtab.h>
 #include <errorhandler.h>
 
+/*
+ *Encapsula metodo de escrita de arquivo e verifica a presenca de erros na compilacao
+*/
 void genprint(const char *format, ...)
 {
     if (error)
@@ -18,17 +21,28 @@ void genprint(const char *format, ...)
     va_end(args);
 }
 
+/*
+ *Geracao da secao .data em assembly
+*/
 void gensecdata()
 {
     genprint("\t.data\n");
 }
 
+
+/*
+ *Geracao da secao .text em assembly
+*/
 void gensectext()
 {
     genprint("\t.text\n");
     genprint("\t.global _start\n\n");
     genprint("_start:\n");
 }
+
+/*
+ * Geracao de codigo da declaracao de variaveis
+*/
 
 void genvar(int initial, int final, int typevar)
 {
