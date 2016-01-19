@@ -24,6 +24,7 @@
 
 FILE           *tape;
 FILE           *ascode;
+char           nametmp[FILENAME_MAX];
 
 int main(int argc, char *argv[])
 {
@@ -34,7 +35,8 @@ int main(int argc, char *argv[])
             exit(-2);
         }
 
-        ascode = fopen(argv[2], "w");
+        sprintf(nametmp, "_%s", argv[2]);
+        ascode = fopen(nametmp, "w");
     } else {
         tape = fopen("/home/cesar/Área de Trabalho/Compilers/compilador/parser_annotated/teste.pas", "r");
         if (tape == NULL) {
@@ -49,6 +51,11 @@ int main(int argc, char *argv[])
     mypas();
 
     fcloseall();
+
+    if (!error) {
+        rename(nametmp, argv[2]);
+    }
+
     printf("\n");
 
     return 0;

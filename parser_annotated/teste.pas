@@ -10,7 +10,7 @@ begin
 	write(x+ab);
 	writeln(x+ab);
 	test1 := teste and true or false;
-	if x = 14 + 7 then
+	if x = 15 + 7 then
 		web := 3 + 4 * 7
 	else
 		guizao := 3 + 7 * 0;

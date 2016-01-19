@@ -14,7 +14,7 @@ void genprint(const char *format, ...)
 
     va_list args;
     va_start(args, format);
-    vfprintf(stdout, format, args);
+    vfprintf(ascode, format, args);
     va_end(args);
 }
 

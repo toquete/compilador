@@ -4,6 +4,7 @@
 #include <utils.h>
 #include <typecheck.h>
 #include <errorhandler.h>
+#include <gencode.h>
 
 int error = 0;
 
@@ -46,6 +47,11 @@ void errorsDictionary(char *err, int errorcode)
     }
 }
 
+void closedestfile() {
+    fclose(ascode);
+    remove(nametmp);
+}
+
 void
 fatal_error(int errorcode)
 {
@@ -58,6 +64,8 @@ fatal_error(int errorcode)
             errMsg);
 
     error = 1;
+
+    closedestfile();
 }
 
 void
@@ -76,4 +84,6 @@ type_fatal_error(int errorcode, int expectedtype, int gottype)
             errorcode);
 
     error = 1;
+
+    closedestfile();
 }

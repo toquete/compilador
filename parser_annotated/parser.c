@@ -385,19 +385,6 @@ void mypas (void)
     match(';');
     body();
     match('.');
-
-    printf("\n\n-------------------------------------");
-    printf("\n              VAR LIST               \n");
-    printf("-------------------------------------\n\n");
-
-    int i, j;
-    for (i = 0; i < symtab_next_entry; i++) {
-        printf("%-*s", MAXIDLEN, &(symtab_names[symtab_descriptor[i][0]]));
-        for (j = 0; j < 2; j++) {
-            printf("%3i", symtab_descriptor[i][j]);
-        }
-        printf("\n");
-    }
 }
 
 /**
