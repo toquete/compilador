@@ -105,15 +105,21 @@ void uconstant(void)
     case NIL:
         match(NIL);
         break;
-    default:
+    case STRCONST:
         match(STRCONST);
+        break;
+    case TRUE:
+        match(TRUE);
+        break;
+    default:
+        match(FALSE);
     }
 }
 
 int isuconstant(void)
 {
     switch (lookahead) {
-    case UINT: case UFLOAT: case NIL: case STRCONST:
+    case UINT: case UFLOAT: case NIL: case STRCONST: case TRUE: case FALSE:
         return lookahead;
     }
 
