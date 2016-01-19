@@ -29,6 +29,10 @@ char *keyword[] = {
     "boolean",
     "true",
     "false",
+    "read",
+    "readln",
+    "write",
+    "writeln",
     "end"
 };
 

@@ -10,6 +10,7 @@ enum {
     UINT,
     UFLOAT,
     UDOUBLE,
+    STRCONST,
     GEQ,
     LEQ,
     NEQ,

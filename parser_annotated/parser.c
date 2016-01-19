@@ -553,7 +553,8 @@ void forstmt(void)
 
     /**/genprint(".L%i:\n", label_for = label_counter);/**/
     /**/label_counter++;/**/
-    /**/genprint("\tje .L%i\n", label_end_for);/**/
+    /**/genprint("\tje .L%i\n", label_end_for= label_counter);/**/
+    /**/label_counter++;/**/
 
     match(DO);
     stmt();
@@ -574,6 +575,43 @@ variable_list:
     if (lookahead == ',' ) {
         match(',');
         goto variable_list;
+    }
+}
+
+void idiolist (void)
+{
+
+ID_list:
+    /**/if(symtab_lookup(lexeme) == -1)/**/
+        fatal_error(SYMB_NFND);
+
+match(ID);
+
+    if (lookahead == ',') {
+        match (',');
+        goto ID_list;
+    }
+}
+
+
+void writestmt()
+{
+    match(WRITE);
+    match('(');
+    /**/int synthtype = expression(NONE);/**/
+    //idiolist();
+    //expression(REAL_TYPE);
+    match(')');
+}
+
+void iostmt()
+{
+    switch (lookahead) {
+    case WRITE:
+        writestmt();
+        break;
+    default:
+        break;
     }
 }
 
@@ -599,6 +637,12 @@ int stmt(void)
         break;
     case ID:
         idstmt();
+        break;
+    case READ:
+    case READLN:
+    case WRITE:
+    case WRITELN:
+        iostmt();
         break;
     default:
         foundStmt = 0;

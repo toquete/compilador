@@ -28,5 +28,9 @@ enum {
     BOOLEAN,
     TRUE,
     FALSE,
+    READ,
+    READLN,
+    WRITE,
+    WRITELN,
     END
 };
