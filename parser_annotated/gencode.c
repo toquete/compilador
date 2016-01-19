@@ -46,6 +46,13 @@ void gensecdata()
     genprint("\t.data\n");
 }
 
+void gensectext()
+{
+    genprint("\t.text\n");
+    genprint("\t.global _start\n\n");
+    genprint("_start:\n");
+}
+
 void genvar(int initial, int final, int typevar)
 {
     int i;
