@@ -7,6 +7,13 @@ var
 begin
 	ab := 654;
 	x := 14.30e100;
-	web := 3 + 4 * 7;
+	if x = 14 + 7 then
+		web := 3 + 4 * 7
+	else
+		guizao := 3 + 7 * 0;
+
+	repeat
+		x := 3.e-12
+	until x <> 10;
 end.
 
