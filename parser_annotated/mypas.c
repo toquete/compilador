@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
 
         ascode = fopen(argv[2], "w");
     } else {
-        tape = fopen("../teste.pas", "r");
+        tape = fopen("/home/cesar/Área de Trabalho/Compilers/compilador/parser_annotated/teste.pas", "r");
         if (tape == NULL) {
             fprintf(stderr, "file not found... exiting\n");
             exit(-2);

@@ -7,29 +7,6 @@
 #include <symtab.h>
 #include <errorhandler.h>
 
-/*void readln()
-{
-
-
-}
-
-void read()
-{
-
-
-}
-
-void write(char *str)
-{
-    write("string");
-    fprintf(ascode, str);
-}
-
-void writeln()
-{
-
-}*/
-
 void genprint(const char *format, ...)
 {
     if (error)

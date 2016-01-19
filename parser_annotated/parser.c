@@ -579,11 +579,23 @@ variable_list:
 }
 
 
-void writestmt()
+void writestmt(void)
 {
     match(WRITE);
     match('(');
-    /**/int synthtype = expression(NONE);/**/
+    /**/expr_list();/**/
+    /**/genprint("\tmov $0, %rax\n");/**/
+    /**/genprint("\tcall printf\n");/**/
+    match(')');
+}
+
+void readstmt(void)
+{
+    match(READ);
+    match('(');
+    /**/expr_list();/**/
+    /**/genprint("\tmov $0, %rax\n");/**/
+    /**/genprint("\tcall scanf\n");/**/
     match(')');
 }
 
@@ -592,6 +604,9 @@ void iostmt()
     switch (lookahead) {
     case WRITE:
         writestmt();
+        break;
+    case READ:
+        readstmt();
         break;
     default:
         break;
