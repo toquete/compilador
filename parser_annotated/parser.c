@@ -578,29 +578,12 @@ variable_list:
     }
 }
 
-void idiolist (void)
-{
-
-ID_list:
-    /**/if(symtab_lookup(lexeme) == -1)/**/
-        fatal_error(SYMB_NFND);
-
-match(ID);
-
-    if (lookahead == ',') {
-        match (',');
-        goto ID_list;
-    }
-}
-
 
 void writestmt()
 {
     match(WRITE);
     match('(');
     /**/int synthtype = expression(NONE);/**/
-    //idiolist();
-    //expression(REAL_TYPE);
     match(')');
 }
 

@@ -7,6 +7,7 @@ var
 begin
 	ab := 654;
 	x := 14.30e100;
+	write(x+ab);
 	if x = 14 + 7 then
 		web := 3 + 4 * 7
 	else

@@ -1,3 +1,16 @@
+/*******************PARSER ANNOTATED***************************************
+ *
+ * UNIVERSIDADE ESTADUAL PAULISTA
+ *
+ * PROJETO FINAL DA DISCIPLINA DE COMPILADORES DESENVOLVIDO PELOS ALUNOS:
+ *        CÉSAR OKADA;
+ *        GUILHERME TOQUETE;
+ *        WEBSTER LIMA.
+ *
+ * COM BASE NOS CÓDIGOS ELABORADOS PELO PROFESSOR DURANTE AS AULAS PRATICAS.
+ *
+ ***************************************************************************/
+
 /*
  * @<main.c>::
  */
