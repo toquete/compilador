@@ -1,3 +1,5 @@
+/**@<typecheck.c>::**/
+
 #include <typecheck.h>
 #include <errorhandler.h>
 

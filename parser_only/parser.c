@@ -31,6 +31,10 @@ ID_list:
     }
 }
 
+/**
+ * constantlist -> CONSTANT{, CONSTANT}
+ */
+
 void constantlist(void)
 {
 constant_list:
@@ -40,6 +44,13 @@ constant_list:
         goto constant_list;
     }
 }
+
+/**
+ * parmlist ->  PROCEDURE
+ *              |FUNCTION
+ *              |VAR ID{, ID}
+ *
+ */
 
 void parmlist (void)
 {
@@ -72,7 +83,12 @@ int isconstant(void)
 
     return 0;
 }
-
+/**
+ * constant ->  STRCONST
+ *              |ID
+ *              |UINT
+ *              |UFLOAT
+ */
 void constant(void)
 {
     if (lookahead == STRCONST)
@@ -93,6 +109,15 @@ void constant(void)
     }
 }
 
+/**
+ * uconstant ->  STRCONST
+ *              |ID
+ *              |UINT
+ *              |UFLOAT
+ *              |UINT
+ *              |TRUE
+ *              |FALSE
+ */
 void uconstant(void)
 {
     switch(lookahead){
@@ -125,7 +150,12 @@ int isuconstant(void)
 
     return 0;
 }
-
+/**
+ * typeidentifier   ->  INTEGER
+ *                      |REAL
+ *                      |DOUBLE
+ *                      |BOOLEAN
+ */
 void typeidentifier(void)
 {
     switch(lookahead){
@@ -176,6 +206,7 @@ void simple_type(void)
     }
 }
 
+
 void field_list(void)
 {
 field_list:
@@ -208,6 +239,9 @@ _CONST_list:
     }
 }
 
+/**
+ * expr_list -> EXPR {, EXPR}
+ */
 void expr_list(void)
 {
 expr_list:
@@ -328,6 +362,18 @@ void expression (void)
         expr();
     }
 }
+
+/**
+ *  *
+ * expr -> [-] term { [+|-] term }
+ *
+ * term -> fact { [*|/] fact }
+ *
+ * fact -> ID
+ *       | NUM
+ *       | ( expr )
+ *
+ */
 
 void expr(void)
 {
@@ -469,6 +515,15 @@ void proc_func(void)
     }
 }
 
+/**
+ *  body -> LABEL UINT {, UINT}
+ *         | CONST ID =  CONSTANT {CONST ID =  CONSTANT; }
+ *         | TYPE  {ID} = TYPE
+ *         | VAR    ID {, ID} : TYPE ;
+ *         | PROCEDURE
+ *         |FUNCTION
+*/
+
 void body (void)
 {
     label();
@@ -511,6 +566,7 @@ void mypas (void)
 * repstmt -> REPEAT stmtlist UNTIL expr
 * forstmt -> FOR expr := expr TO expr DO stmt
 * idstmt -> expr := expr
+* casestmt -> CASE expr OF END
 */
 void idstmt(void)
 {

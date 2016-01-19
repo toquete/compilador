@@ -26,6 +26,10 @@
  *
  * body -> { VAR ID { , ID } : type ; { ID { , ID } : type ; } }
  */
+
+/**
+ * idlist -> {ID {, ID}}
+ */
 void idlist (void)
 {
     /**/int initial, final /**/;
@@ -66,7 +70,7 @@ _parm_spec:
     }
 }
 
-/*
+/**
  * type return:
  * 0 -> BOOLEAN
  * 1 -> NUMBER (INTEGER + REAL + DOUBLE)
@@ -106,6 +110,9 @@ int istype(void)
     /**/return 0;/**/
 }
 
+/**
+ * expr_list -> EXPR {,EXPR}
+ */
 void expr_list(void)
 {
 expr_list:
@@ -178,6 +185,18 @@ int expression(/**/int inheritedtype/**/)
 
     /**/return impltype;/**/
 }
+
+/**
+ *  *
+ * expr -> [-] term { [+|-] term }
+ *
+ * term -> fact { [*|/] fact }
+ *
+ * fact -> ID
+ *       | NUM
+ *       | ( expr )
+ *
+ */
 
 int expr(void)
 {
@@ -340,6 +359,9 @@ int fact(void)
     /**/return impltype;/**/
 }
 
+/**
+ * var -> { VAR ID {',' ID} ':' smptype ';' {ID {',' ID} ':' simple_type ';'} }
+ */
 void var(void)
 {
     /**/gensecdata()/**/;
@@ -396,6 +418,8 @@ void mypas (void)
 * repstmt -> REPEAT stmtlist UNTIL expr
 * forstmt -> FOR expr := expr TO expr DO stmt
 * idstmt -> expr := expr
+* writestmt -> WRITE '('expr')'
+* readstmt -> READ '('varlist')'
 */
 void idstmt(void)
 {
@@ -437,13 +461,16 @@ void idstmt(void)
         }/**/
     }
 }
-
+/**
+ * beginstmt -> BEGIN stmtlist END
+ */
 void beginstmt(void)
 {
     match(BEGIN);
     stmtlist();
     match(END);
 }
+
 
 void ifstmt(void)
 {

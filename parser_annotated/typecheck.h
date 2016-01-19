@@ -1,3 +1,5 @@
+/**@<typecheck.c>::**/
+
 enum {
     NONE,
     BOOLEAN_TYPE,
